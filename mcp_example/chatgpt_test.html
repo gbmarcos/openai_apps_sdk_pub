@@ -1,0 +1,88 @@
+<!-- test-chatgpt.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ChatGPT Simulator</title>
+  <style>
+    body {
+      margin: 20px;
+      font-family: sans-serif;
+      background: #f5f5f5;
+    }
+    .controls {
+      margin-bottom: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background: #0066cc;
+      color: white;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #0052a3;
+    }
+    iframe {
+      width: 100%;
+      height: 400px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <h2>🎨 ChatGPT Theme Simulator</h2>
+    <p>Current theme: <strong id="current-theme">light</strong></p>
+    <button onclick="setTheme('light')">☀️ Light Mode</button>
+    <button onclick="setTheme('dark')">🌙 Dark Mode</button>
+  </div>
+  
+  <iframe id="widget" src="http://localhost:8000/widget/"></iframe>
+  
+  <script>
+    const iframe = document.getElementById('widget');
+    let currentTheme = 'light';
+    
+    // Inyectar bridge simulado cuando cargue el iframe
+    iframe.onload = function() {
+      const iframeWindow = iframe.contentWindow;
+      
+      // Simular window.openai
+      iframeWindow.openai = {
+        displayMode: currentTheme,
+        version: '1.0.0-simulator'
+      };
+      
+      console.log('✅ Bridge injected into iframe');
+    };
+    
+    function setTheme(theme) {
+      currentTheme = theme;
+      document.getElementById('current-theme').textContent = theme;
+      
+      const iframeWindow = iframe.contentWindow;
+      
+      // Actualizar displayMode
+      if (iframeWindow.openai) {
+        iframeWindow.openai.displayMode = theme;
+      }
+      
+      // Disparar evento
+      const event = new CustomEvent('openai:theme_changed', {
+        detail: theme
+      });
+      
+      iframeWindow.dispatchEvent(event);
+      console.log(`🎨 Theme changed to: ${theme}`);
+    }
+  </script>
+</body>
+</html>

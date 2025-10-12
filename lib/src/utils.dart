@@ -2,6 +2,8 @@ import 'dart:js_interop';
 
 import 'package:web/web.dart';
 
+export 'dart:js_interop' show JSExportedDartFunction;
+
 /// Enums y tipos
 enum DisplayMode {
   pip,
@@ -295,46 +297,58 @@ extension type SetGlobalsEventDetail._(JSObject _) implements JSObject {
 }
 
 /// Helper para escuchar eventos de cambio de globals
-void addGlobalsChangeListener(
+JSExportedDartFunction addGlobalsChangeListener(
   void Function(Map<String, dynamic>? globals) callback,
 ) {
+  final listener = (Event event) {
+    final customEvent = event as CustomEvent;
+    final detail = customEvent.detail as SetGlobalsEventDetail?;
+    final globals = detail?.globals.dartify() as Map<String, dynamic>?;
+    callback(globals);
+  }.toJS;
   window.addEventListener(
     setGlobalsEventType,
-    (Event event) {
-      final customEvent = event as CustomEvent;
-      final detail = customEvent.detail as SetGlobalsEventDetail?;
-      final globals = detail?.globals.dartify() as Map<String, dynamic>?;
-      callback(globals);
-    }.toJS,
+    listener,
+  );
+
+  return listener;
+}
+
+void removeGlobalsChangeListener(
+  JSExportedDartFunction listener,
+) {
+  window.removeEventListener(
+    setGlobalsEventType,
+    listener,
   );
 }
 
 /// Ejemplo de uso
-void main() {
-  final client = OpenAiClient.fromWindow();
+// void main() {
+//   final client = OpenAiClient.fromWindow();
 
-  client.sendFollowUpMessage('Hello from Dart!');
+//   client.sendFollowUpMessage('Hello from Dart!');
 
-  // Acceder a propiedades
-  print('Theme: ${client.theme}');
-  print('Device: ${client.deviceType}');
-  print('Max Height: ${client.maxHeight}');
+//   // Acceder a propiedades
+//   print('Theme: ${client.theme}');
+//   print('Device: ${client.deviceType}');
+//   print('Max Height: ${client.maxHeight}');
 
-  // Llamar a un tool
-  client.callTool('myTool', {'param': 'value'}).then((response) {
-    print('Tool called successfully');
-  });
+//   // Llamar a un tool
+//   client.callTool('myTool', {'param': 'value'}).then((response) {
+//     print('Tool called successfully');
+//   });
 
-  // Enviar mensaje de seguimiento
-  client.sendFollowUpMessage('Hello from Dart!');
+//   // Enviar mensaje de seguimiento
+//   client.sendFollowUpMessage('Hello from Dart!');
 
-  // Cambiar display mode
-  client.requestDisplayMode(DisplayMode.fullscreen).then((mode) {
-    print('Display mode changed to: $mode');
-  });
+//   // Cambiar display mode
+//   client.requestDisplayMode(DisplayMode.fullscreen).then((mode) {
+//     print('Display mode changed to: $mode');
+//   });
 
-  // Escuchar cambios en globals
-  addGlobalsChangeListener((globals) {
-    print('Globals changed: $globals');
-  });
-}
+//   // Escuchar cambios en globals
+//   addGlobalsChangeListener((globals) {
+//     print('Globals changed: $globals');
+//   });
+// }

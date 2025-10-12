@@ -2,3 +2,4 @@
 library;
 
 export 'src/open_ai_bridge.dart';
+export 'src/utils.dart';
