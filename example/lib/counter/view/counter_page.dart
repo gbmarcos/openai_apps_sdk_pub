@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:example/counter/counter.dart';
 import 'package:example/l10n/l10n.dart';
+import 'package:openai_apps_sdk/openai_apps_sdk.dart' hide Theme;
 
 class CounterPage extends StatelessWidget {
   const CounterPage({super.key});
@@ -20,10 +21,52 @@ class CounterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final openAiSdk = OpenAiClient.fromWindow();
+
+    dynamic getOpenAIDataSafely(dynamic Function() function) {
+      try {
+        return function();
+      } catch (e) {
+        return 'Error: $e';
+      }
+    }
+
     final l10n = context.l10n;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.counterAppBarTitle)),
-      body: const Center(child: CounterText()),
+      body: SingleChildScrollView(
+        child: FractionallySizedBox(
+          widthFactor: 1,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              const CounterText(),
+              const Text('OpenAI SDK data:'),
+              Text('Theme: ${getOpenAIDataSafely(() => openAiSdk.theme)}'),
+              Text('Locale: ${getOpenAIDataSafely(() => openAiSdk.locale)}'),
+              Text(
+                'Device Type: ${getOpenAIDataSafely(() => openAiSdk.deviceType)}',
+              ),
+              Text(
+                'Max Height: ${getOpenAIDataSafely(() => openAiSdk.maxHeight)}',
+              ),
+              Text(
+                'Display Mode: ${getOpenAIDataSafely(() => openAiSdk.displayMode)}',
+              ),
+              Text(
+                'Has Hover Capability: ${getOpenAIDataSafely(() => openAiSdk.hasHoverCapability)}',
+              ),
+              Text(
+                'Has Touch Capability: ${getOpenAIDataSafely(() => openAiSdk.hasTouchCapability)}',
+              ),
+              Text(
+                'Safe Area Insets: ${getOpenAIDataSafely(() => openAiSdk.safeAreaInsets)}',
+              ),
+            ],
+          ),
+        ),
+      ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,

@@ -182,10 +182,23 @@ extension type OpenAiGlobals._(JSObject _) implements JSObject {
   external JSString get theme;
   external UserAgent get userAgent;
   external JSString get locale;
-  external JSNumber get maxHeight;
+  external JSNumber? get maxHeight;
   external JSString get displayMode;
   external SafeArea get safeArea;
   external JSObject get toolInput;
+  external JSObject? get toolOutput;
+  external JSObject? get toolResponseMetadata;
+  external JSObject? get widgetState;
+}
+
+extension type PartialOpenAiGlobals._(JSObject _) implements JSObject {
+  external JSString? get theme;
+  external UserAgent? get userAgent;
+  external JSString? get locale;
+  external JSNumber? get maxHeight;
+  external JSString? get displayMode;
+  external SafeArea? get safeArea;
+  external JSObject? get toolInput;
   external JSObject? get toolOutput;
   external JSObject? get toolResponseMetadata;
   external JSObject? get widgetState;
@@ -196,9 +209,59 @@ extension type OpenAiGlobals._(JSObject _) implements JSObject {
 @anonymous
 extension type OpenAiSDK._(JSObject _) implements OpenAiAPI, OpenAiGlobals {}
 
+
+
+@JS()
+@anonymous
+extension type SetGlobalsEventDetail._(JSObject _) implements JSObject {
+  external PartialOpenAiGlobals get globals;
+}
+
+@JS()
+@anonymous
+extension type SetGlobalsEvent._(JSObject _) implements CustomEvent, JSObject {
+  external factory SetGlobalsEvent(
+    String type, [
+    SetGlobalsEventInit eventInitDict,
+  ]);
+
+  external void initSetGlobalsEvent(
+    String type, [
+    bool bubbles,
+    bool cancelable,
+    SetGlobalsEventDetail? detail,
+  ]);
+
+  external SetGlobalsEventDetail? get detail;
+}
+
+@JS()
+@anonymous
+extension type SetGlobalsEventInit._(JSObject _)
+    implements CustomEventInit, JSObject {
+  external factory SetGlobalsEventInit({
+    bool bubbles,
+    bool cancelable,
+    bool composed,
+    SetGlobalsEventDetail? detail,
+  });
+
+  external SetGlobalsEventDetail? get detail;
+  external set detail(SetGlobalsEventDetail? value);
+}
+
+/// Event listener para cambios globales
+const setGlobalsEventType = 'openai:set_globals';
+
 /// Window extension para acceder a window.openai
 extension WindowOpenAI on Window {
   external OpenAiSDK get openai;
+
+  /// Stream for set globals events
+  Stream<SetGlobalsEvent> get onSetOpenAIGlobals =>
+      const EventStreamProvider<SetGlobalsEvent>(
+        setGlobalsEventType,
+      ).forTarget(this);
 }
 
 /// Clase Dart para trabajar con el SDK de manera más idiomática
@@ -252,7 +315,7 @@ class OpenAiClient {
 
   String get locale => _sdk.locale.toDart;
 
-  double get maxHeight => _sdk.maxHeight.toDartDouble;
+  double? get maxHeight => _sdk.maxHeight?.toDartDouble;
 
   DisplayMode get displayMode =>
       DisplayMode.fromString(_sdk.displayMode.toDart);
@@ -286,69 +349,3 @@ class OpenAiClient {
   Map<String, dynamic>? get widgetState =>
       _sdk.widgetState.dartify() as Map<String, dynamic>?;
 }
-
-/// Event listener para cambios globales
-const setGlobalsEventType = 'openai:set_globals';
-
-@JS()
-@anonymous
-extension type SetGlobalsEventDetail._(JSObject _) implements JSObject {
-  external JSObject get globals;
-}
-
-/// Helper para escuchar eventos de cambio de globals
-JSExportedDartFunction addGlobalsChangeListener(
-  void Function(Map<String, dynamic>? globals) callback,
-) {
-  final listener = (Event event) {
-    final customEvent = event as CustomEvent;
-    final detail = customEvent.detail as SetGlobalsEventDetail?;
-    final globals = detail?.globals.dartify() as Map<String, dynamic>?;
-    callback(globals);
-  }.toJS;
-  window.addEventListener(
-    setGlobalsEventType,
-    listener,
-  );
-
-  return listener;
-}
-
-void removeGlobalsChangeListener(
-  JSExportedDartFunction listener,
-) {
-  window.removeEventListener(
-    setGlobalsEventType,
-    listener,
-  );
-}
-
-/// Ejemplo de uso
-// void main() {
-//   final client = OpenAiClient.fromWindow();
-
-//   client.sendFollowUpMessage('Hello from Dart!');
-
-//   // Acceder a propiedades
-//   print('Theme: ${client.theme}');
-//   print('Device: ${client.deviceType}');
-//   print('Max Height: ${client.maxHeight}');
-
-//   // Llamar a un tool
-//   client.callTool('myTool', {'param': 'value'}).then((response) {
-//     print('Tool called successfully');
-//   });
-
-//   // Enviar mensaje de seguimiento
-//   client.sendFollowUpMessage('Hello from Dart!');
-
-//   // Cambiar display mode
-//   client.requestDisplayMode(DisplayMode.fullscreen).then((mode) {
-//     print('Display mode changed to: $mode');
-//   });
-
-//   // Escuchar cambios en globals
-//   addGlobalsChangeListener((globals) {
-//     print('Globals changed: $globals');
-//   });
-// }

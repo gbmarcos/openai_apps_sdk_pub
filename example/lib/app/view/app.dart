@@ -10,26 +10,32 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ParentThemeCubit, openai_apps_sdk.Theme?>(
-      bloc: ParentThemeCubit(),
-      builder: (context, openAiTheme) {
-        return MaterialApp(
-          theme: ThemeData(
-            appBarTheme: AppBarTheme(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+    return BlocProvider(
+      create: (_) => ParentThemeCubit(),
+      child: BlocBuilder<ParentThemeCubit, openai_apps_sdk.Theme?>(
+        builder: (context, openAiTheme) {
+          return MaterialApp(
+            theme: ThemeData(
+              appBarTheme: AppBarTheme(
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              ),
+              useMaterial3: true,
             ),
-            useMaterial3: true,
-          ),
-          themeMode: switch (openAiTheme) {
-            openai_apps_sdk.Theme.light => ThemeMode.light,
-            openai_apps_sdk.Theme.dark => ThemeMode.dark,
-            _ => null,
-          },
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const CounterPage(),
-        );
-      },
+            darkTheme: ThemeData.dark(
+              useMaterial3: true,
+            ),
+
+            themeMode: switch (openAiTheme) {
+              openai_apps_sdk.Theme.light => ThemeMode.light,
+              openai_apps_sdk.Theme.dark => ThemeMode.dark,
+              _ => null,
+            },
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const CounterPage(),
+          );
+        },
+      ),
     );
   }
 }

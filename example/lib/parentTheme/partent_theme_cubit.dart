@@ -1,30 +1,31 @@
+import 'dart:async';
+import 'dart:js_interop';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:openai_apps_sdk/openai_apps_sdk.dart' as openai;
+import 'package:web/web.dart' as web;
 
-import 'package:openai_apps_sdk/openai_apps_sdk.dart' as openai_apps_sdk;
-
-class ParentThemeCubit extends Cubit<openai_apps_sdk.Theme?> {
-
-  ParentThemeCubit() : super(openai_apps_sdk.Theme.light) {
+class ParentThemeCubit extends Cubit<openai.Theme?> {
+  ParentThemeCubit() : super(openai.Theme.light) {
     emit(openaiClient.theme);
-    listener = openai_apps_sdk.addGlobalsChangeListener((globals) {
-      final theme = globals?['theme'] as String?;
-      emit(openai_apps_sdk.Theme.fromString(theme ?? 'light'));
-
-      print('theme: $theme');
+    _subscription = web.window.onSetOpenAIGlobals.listen((event) {
+      final theme = event.detail?.globals.theme?.toDart;
+      if (theme != null) {
+        emit(openai.Theme.fromString(theme));
+      }
     });
   }
-  final openai_apps_sdk.OpenAiClient openaiClient =
-      openai_apps_sdk.OpenAiClient.fromWindow();
+  final openai.OpenAiClient openaiClient = openai.OpenAiClient.fromWindow();
 
-  late final openai_apps_sdk.JSExportedDartFunction listener;
+  StreamSubscription<openai.SetGlobalsEvent>? _subscription;
 
   @override
-  Future<void> close() {
-    openai_apps_sdk.removeGlobalsChangeListener(listener);
+  Future<void> close() async {
+    await _subscription?.cancel();
     return super.close();
   }
 
-  void setTheme(openai_apps_sdk.Theme theme) {
+  void setTheme(openai.Theme theme) {
     emit(theme);
   }
 }
