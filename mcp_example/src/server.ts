@@ -10,6 +10,7 @@ import { z } from "zod";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // Middleware
 app.use(
@@ -20,9 +21,12 @@ app.use(
   })
 );
 
+// Servir los assets de Flutter (fuentes, shaders, manifests, etc.)
+const FLUTTER_ASSETS_PATH = path.resolve("../example/build/web/assets");
+app.use("/assets", express.static(FLUTTER_ASSETS_PATH));
+
 const MAIN_DART_JS = readFileSync("../example/build/web/main.dart.js", "utf8");
 
-const FLUTTER_DEMO_HTML = readFileSync("../example/build/web/index.html", "utf8");
 
 // Store transports por session ID
 const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};

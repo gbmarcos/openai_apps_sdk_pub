@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:example/counter/counter.dart';
 import 'package:example/l10n/l10n.dart';
 import 'package:openai_apps_sdk/openai_apps_sdk.dart' hide Theme;
+import 'package:ultimate_flutter_icons/ficon.dart';
+import 'package:ultimate_flutter_icons/icons/ai.dart';
 
 class CounterPage extends StatelessWidget {
   const CounterPage({super.key});
@@ -73,12 +75,12 @@ class CounterView extends StatelessWidget {
         children: [
           FloatingActionButton(
             onPressed: () => context.read<CounterCubit>().increment(),
-            child: const Icon(Icons.add),
+            child: const FIcon(AI.AiOutlinePlus) ,
           ),
           const SizedBox(height: 8),
           FloatingActionButton(
             onPressed: () => context.read<CounterCubit>().decrement(),
-            child: const Icon(Icons.remove),
+            child: const FIcon(AI.AiOutlineMinus),
           ),
         ],
       ),

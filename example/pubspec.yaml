@@ -17,6 +17,7 @@ dependencies:
   intl: ^0.20.2
   openai_apps_sdk:
     path: ../
+  ultimate_flutter_icons: ^1.4.0
 
 dev_dependencies:
   bloc_test: ^10.0.0
