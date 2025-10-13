@@ -1,3 +1,4 @@
+import 'package:example/image_carousel/image_carousel.dart';
 import 'package:example/parentTheme/partent_theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:example/counter/counter.dart';
@@ -32,7 +33,7 @@ class App extends StatelessWidget {
             },
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CounterPage(),
+            home: const CarouselPage(),
           );
         },
       ),
