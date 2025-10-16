@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:example/counter/counter.dart';
 import 'package:example/l10n/l10n.dart';
-import 'package:openai_apps_sdk/openai_apps_sdk.dart' hide Theme;
+import 'package:openai_apps_sdk/openai_apps_sdk.dart' hide OpenAiTheme;
 import 'package:ultimate_flutter_icons/ficon.dart';
 import 'package:ultimate_flutter_icons/icons/ai.dart';
 
@@ -23,7 +23,7 @@ class CounterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final openAiSdk = OpenAiClient.fromWindow();
+    final openAiSdk = OpenAiSDK.instance;
 
     dynamic getOpenAIDataSafely(dynamic Function() function) {
       try {
@@ -75,7 +75,7 @@ class CounterView extends StatelessWidget {
         children: [
           FloatingActionButton(
             onPressed: () => context.read<CounterCubit>().increment(),
-            child: const FIcon(AI.AiOutlinePlus) ,
+            child: const FIcon(AI.AiOutlinePlus),
           ),
           const SizedBox(height: 8),
           FloatingActionButton(

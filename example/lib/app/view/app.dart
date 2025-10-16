@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:example/counter/counter.dart';
 import 'package:example/l10n/l10n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:openai_apps_sdk/openai_apps_sdk.dart' as openai_apps_sdk;
+import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -13,7 +13,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => ParentThemeCubit(),
-      child: BlocBuilder<ParentThemeCubit, openai_apps_sdk.Theme?>(
+      child: BlocBuilder<ParentThemeCubit, OpenAiTheme?>(
         builder: (context, openAiTheme) {
           return MaterialApp(
             theme: ThemeData(
@@ -27,13 +27,13 @@ class App extends StatelessWidget {
             ),
 
             themeMode: switch (openAiTheme) {
-              openai_apps_sdk.Theme.light => ThemeMode.light,
-              openai_apps_sdk.Theme.dark => ThemeMode.dark,
+              OpenAiTheme.light => ThemeMode.light,
+              OpenAiTheme.dark => ThemeMode.dark,
               _ => null,
             },
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CarouselPage(),
+            home: const CounterPage(),
           );
         },
       ),

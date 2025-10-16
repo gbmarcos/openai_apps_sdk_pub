@@ -1,23 +1,16 @@
 import 'dart:async';
-import 'dart:js_interop';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:openai_apps_sdk/openai_apps_sdk.dart' as openai;
-import 'package:web/web.dart' as web;
+import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
-class ParentThemeCubit extends Cubit<openai.Theme?> {
-  ParentThemeCubit() : super(openai.Theme.light) {
+class ParentThemeCubit extends Cubit<OpenAiTheme> {
+  ParentThemeCubit() : super(OpenAiTheme.light) {
     emit(openaiClient.theme);
-    _subscription = web.window.onSetOpenAIGlobals.listen((event) {
-      final theme = event.detail?.globals.theme?.toDart;
-      if (theme != null) {
-        emit(openai.Theme.fromString(theme));
-      }
-    });
+    _subscription = openaiClient.themeStream.listen(emit);
   }
-  final openai.OpenAiClient openaiClient = openai.OpenAiClient.fromWindow();
+  final OpenAiSDK openaiClient = OpenAiSDK.instance;
 
-  StreamSubscription<openai.SetGlobalsEvent>? _subscription;
+  StreamSubscription<OpenAiTheme>? _subscription;
 
   @override
   Future<void> close() async {
@@ -25,7 +18,7 @@ class ParentThemeCubit extends Cubit<openai.Theme?> {
     return super.close();
   }
 
-  void setTheme(openai.Theme theme) {
+  void setTheme(OpenAiTheme theme) {
     emit(theme);
   }
 }

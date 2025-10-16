@@ -1,402 +1,369 @@
-// openai_bridge.dart
-import 'dart:async';
-import 'dart:convert';
-import 'dart:js_interop' as js;
-import 'dart:js_interop_unsafe';
-import 'package:web/web.dart' as web;
+import 'dart:js_interop';
 
-// ============================================================================
-// JavaScript Interop Definitions
-// ============================================================================
+import 'package:openai_apps_sdk/src/data/models.dart';
+import 'package:web/web.dart';
 
-/// External reference to the global OpenAI bridge object
-@js.JS('openai')
-external OpenAIBridgeJS? get _openai;
+/// SafeAreaInsets
+@JS()
+@anonymous
+extension type _JSSafeAreaInsets._(JSObject _) implements JSObject {
+  external factory _JSSafeAreaInsets({
+    JSNumber top,
+    JSNumber bottom,
+    JSNumber left,
+    JSNumber right,
+  });
 
-/// JavaScript interop type for the OpenAI bridge object injected by ChatGPT
-extension type OpenAIBridgeJS(js.JSObject _) implements js.JSObject {
-  /// Current display mode: 'light', 'dark', or 'compact'
-  external js.JSString? get displayMode;
-
-  /// Bridge version string
-  external js.JSString? get version;
-
-  /// Subscribe method (if available)
-  external js.JSFunction? get subscribe;
+  external JSNumber get top;
+  external JSNumber get bottom;
+  external JSNumber get left;
+  external JSNumber get right;
 }
 
-// ============================================================================
-// Main OpenAI Bridge Class
-// ============================================================================
+/// SafeArea
+@JS()
+@anonymous
+extension type _JSSafeArea._(JSObject _) implements JSObject {
+  external factory _JSSafeArea({_JSSafeAreaInsets insets});
+  external _JSSafeAreaInsets get insets;
+}
 
-/// Bridge to communicate with OpenAI's ChatGPT environment
-///
-/// This class provides a type-safe, idiomatic Dart interface to interact with
-/// the `window.openai` bridge injected by ChatGPT when your Flutter web app
-/// runs inside an iframe in ChatGPT conversations.
-///
-/// Example:
-/// ```dart
-/// final bridge = OpenAIBridge();
-///
-/// if (bridge.isAvailable) {
-///   // Listen to tool responses
-///   bridge.toolResponseStream.listen((data) {
-///     print('Received: ${data['city']}');
-///   });
-///
-///   // React to theme changes
-///   bridge.themeChangeStream.listen((theme) {
-///     print('Theme: $theme');
-///   });
-///
-///   // Send user action
-///   bridge.notifyUserAction('button_clicked', {'id': 'refresh'});
-/// }
-/// ```
-class OpenAIBridge {
+/// UserAgentCapabilities
+@JS()
+@anonymous
+extension type _JSUserAgentCapabilities._(JSObject _) implements JSObject {
+  external factory _JSUserAgentCapabilities({
+    JSBoolean hover,
+    JSBoolean touch,
+  });
 
-  /// Get the singleton instance
-  factory OpenAIBridge() {
-    _instance ??= OpenAIBridge._internal();
+  external JSBoolean get hover;
+  external JSBoolean get touch;
+}
+
+/// UserAgentDevice
+@JS()
+@anonymous
+extension type _JSUserAgentDevice._(JSObject _) implements JSObject {
+  external factory _JSUserAgentDevice({JSString type});
+  external JSString get type;
+}
+
+/// UserAgent
+@JS()
+@anonymous
+extension type _JSUserAgent._(JSObject _) implements JSObject {
+  external factory _JSUserAgent({
+    _JSUserAgentDevice device,
+    _JSUserAgentCapabilities capabilities,
+  });
+
+  external _JSUserAgentDevice get device;
+  external _JSUserAgentCapabilities get capabilities;
+}
+
+/// CallToolResponse
+@JS()
+@anonymous
+extension type _JSCallToolResponse._(JSObject _) implements JSObject {
+  external factory _JSCallToolResponse();
+  // Añade aquí las propiedades específicas de CallToolResponse según tu API
+}
+
+/// SendFollowUpMessageArgs
+@JS()
+@anonymous
+extension type _JSSendFollowUpMessageArgs._(JSObject _) implements JSObject {
+  external factory _JSSendFollowUpMessageArgs({JSString prompt});
+  external JSString get prompt;
+}
+
+/// OpenExternalArgs
+@JS()
+@anonymous
+extension type _JSOpenExternalArgs._(JSObject _) implements JSObject {
+  external factory _JSOpenExternalArgs({JSString href});
+  external JSString get href;
+}
+
+/// RequestDisplayModeArgs
+@JS()
+@anonymous
+extension type _JSRequestDisplayModeArgs._(JSObject _) implements JSObject {
+  external factory _JSRequestDisplayModeArgs({JSString mode});
+  external JSString get mode;
+}
+
+/// RequestDisplayModeResponse
+@JS()
+@anonymous
+extension type _JSRequestDisplayModeResponse._(JSObject _) implements JSObject {
+  external JSString get mode;
+}
+
+/// OpenAI API
+@JS()
+@anonymous
+extension type _JSOpenAiAPI._(JSObject _) implements JSObject {
+  /// Calls a tool on your MCP. Returns the full response.
+  external JSPromise<_JSCallToolResponse> callTool(
+    JSString name,
+    JSObject args,
+  );
+
+  /// Triggers a followup turn in the ChatGPT conversation
+  external JSPromise<JSAny?> sendFollowUpMessage(
+    _JSSendFollowUpMessageArgs args,
+  );
+
+  /// Opens an external link, redirects web page or mobile app
+  external void openExternal(_JSOpenExternalArgs payload);
+
+  /// For transitioning an app from inline to fullscreen or pip
+  external JSPromise<_JSRequestDisplayModeResponse> requestDisplayMode(
+    _JSRequestDisplayModeArgs args,
+  );
+
+  /// Sets the widget state
+  external JSPromise<JSAny?> setWidgetState(JSObject state);
+}
+
+/// OpenAI Globals
+@JS()
+@anonymous
+extension type _JSOpenAiGlobals._(JSObject _) implements JSObject {
+  external JSString? get theme;
+  external _JSUserAgent? get userAgent;
+  external JSString? get locale;
+  external JSNumber? get maxHeight;
+  external JSString? get displayMode;
+  external _JSSafeArea? get safeArea;
+  external JSObject? get toolInput;
+  external JSObject? get toolOutput;
+  external JSObject? get toolResponseMetadata;
+  external JSObject? get widgetState;
+}
+
+/// OpenAI SDK - Combina API y Globals
+@JS()
+@anonymous
+extension type _JSOpenAiSDK._(JSObject _)
+    implements _JSOpenAiAPI, _JSOpenAiGlobals {}
+
+@JS()
+@anonymous
+extension type _JSSetGlobalsEventDetail._(JSObject _) implements JSObject {
+  external _JSOpenAiGlobals get globals;
+}
+
+@JS()
+@anonymous
+extension type _JSSetGlobalsEvent._(JSObject _)
+    implements CustomEvent, JSObject {
+  external factory _JSSetGlobalsEvent(
+    String type, [
+    _JSSetGlobalsEventInit eventInitDict,
+  ]);
+
+  external void initSetGlobalsEvent(
+    String type, [
+    bool bubbles,
+    bool cancelable,
+    _JSSetGlobalsEventDetail? detail,
+  ]);
+
+  external _JSSetGlobalsEventDetail? get detail;
+}
+
+@JS()
+@anonymous
+extension type _JSSetGlobalsEventInit._(JSObject _)
+    implements CustomEventInit, JSObject {
+  external factory _JSSetGlobalsEventInit({
+    bool bubbles,
+    bool cancelable,
+    bool composed,
+    _JSSetGlobalsEventDetail? detail,
+  });
+
+  external _JSSetGlobalsEventDetail? get detail;
+  external set detail(_JSSetGlobalsEventDetail? value);
+}
+
+/// Event listener para cambios globales
+const setGlobalsEventType = 'openai:set_globals';
+
+/// Window extension para acceder a window.openai
+extension _WindowOpenAI on Window {
+  external _JSOpenAiSDK get openai;
+
+  /// Stream for set globals events
+  Stream<_JSSetGlobalsEvent> get onSetOpenAIGlobals =>
+      const EventStreamProvider<_JSSetGlobalsEvent>(
+        setGlobalsEventType,
+      ).forTarget(this);
+}
+
+extension _JSStringToEnum on JSString? {
+  OpenAiTheme? toOpenAiTheme() {
+    if (this == null) return null;
+    return OpenAiTheme.values.firstWhere(
+      (e) => e.data == this!.toDart,
+      orElse: () => OpenAiTheme.unknown,
+    );
+  }
+
+  OpenAiDisplayMode? toOpenAiDisplayMode() {
+    if (this == null) return null;
+    return OpenAiDisplayMode.values.firstWhere(
+      (e) => e.data == this!.toDart,
+      orElse: () => OpenAiDisplayMode.unknown,
+    );
+  }
+
+  OpenAiDeviceType? toOpenAiDeviceType() {
+    if (this == null) return null;
+    return OpenAiDeviceType.values.firstWhere(
+      (e) => e.data == this!.toDart,
+      orElse: () => OpenAiDeviceType.unknown,
+    );
+  }
+}
+
+extension _JSSafeAreaInsetsToOpenAiSafeAreaInsets on _JSSafeAreaInsets {
+  OpenAiSafeAreaInsets toOpenAiSafeAreaInsets() => OpenAiSafeAreaInsets(
+    top: top.toDartDouble,
+    bottom: bottom.toDartDouble,
+    left: left.toDartDouble,
+    right: right.toDartDouble,
+  );
+}
+
+extension _JSSafeAreaToOpenAiSafeArea on _JSSafeArea {
+  OpenAiSafeArea toOpenAiSafeArea() => OpenAiSafeArea(
+    insets: insets.toOpenAiSafeAreaInsets(),
+  );
+}
+
+extension _JSUserAgentToUserAgent on _JSUserAgent {
+  UserAgent toUserAgent() => UserAgent(
+    device: device.toUserAgentDevice(),
+    capabilities: capabilities.toUserAgentCapabilities(),
+  );
+}
+
+extension _JSUserAgentCapabilitiesToCapabilities on _JSUserAgentCapabilities {
+  UserAgentCapabilities toUserAgentCapabilities() => UserAgentCapabilities(
+    hover: hover.toDart,
+    touch: touch.toDart,
+  );
+}
+
+extension _JSUserAgentDeviceToUserAgentDevice on _JSUserAgentDevice {
+  UserAgentDevice toUserAgentDevice() => UserAgentDevice(
+    type: type.toOpenAiDeviceType()!,
+  );
+}
+
+/// Clase Dart para trabajar con el SDK de manera más idiomática
+class OpenAiSDK {
+  OpenAiSDK._(this._sdk);
+
+  static OpenAiSDK? _instance;
+
+  /// Constructor factory to get the instance of the SDK
+  static OpenAiSDK get instance {
+    _instance ??= OpenAiSDK._(window.openai);
     return _instance!;
   }
 
-  OpenAIBridge._internal() {
-    _setupEventListeners();
-    _log('OpenAIBridge initialized');
+  final _JSOpenAiSDK _sdk;
+
+  OpenAiGlobals _globalsFromJS(_JSOpenAiGlobals globals) => OpenAiGlobals(
+    theme: globals.theme.toOpenAiTheme(),
+    locale: globals.locale?.toDart,
+    maxHeight: globals.maxHeight?.toDartDouble,
+    displayMode: globals.displayMode.toOpenAiDisplayMode(),
+    safeArea: globals.safeArea?.toOpenAiSafeArea(),
+    userAgent: globals.userAgent?.toUserAgent(),
+  );
+
+  /// Call a tool
+  Future<_JSCallToolResponse> callTool(
+    String name,
+    Map<String, dynamic> args,
+  ) async {
+    final jsArgs = args.jsify() as JSObject;
+    final promise = _sdk.callTool(name.toJS, jsArgs);
+    return promise.toDart;
   }
 
-  static OpenAIBridge? _instance;
-
-  // Stream controllers
-  final _toolResponseController =
-      StreamController<Map<String, dynamic>>.broadcast();
-  final _themeChangeController = StreamController<String>.broadcast();
-
-  /// Stream of tool response events from ChatGPT
-  Stream<Map<String, dynamic>> get toolResponseStream =>
-      _toolResponseController.stream;
-
-  /// Stream of theme change events
-  Stream<String> get themeChangeStream => _themeChangeController.stream;
-
-  /// Check if the OpenAI bridge is available (running inside ChatGPT)
-  bool get isAvailable {
-    try {
-      return _openai != null;
-    } on Exception catch (e) {
-      _log('Bridge not available: $e');
-      return false;
-    }
+  /// Send follow-up message
+  Future<void> sendFollowUpMessage(String prompt) async {
+    final args = _JSSendFollowUpMessageArgs(prompt: prompt.toJS);
+    await _sdk.sendFollowUpMessage(args).toDart;
   }
 
-  /// Get the current display mode: 'light', 'dark', or 'compact'
-  String? get displayMode {
-    if (!isAvailable) return null;
-
-    try {
-      final mode = _openai!.displayMode;
-      return mode?.toDart;
-    } on Exception catch (e) {
-      _log('Error getting display mode: $e');
-      return null;
-    }
+  /// Open external link
+  void openExternal(String href) {
+    final args = _JSOpenExternalArgs(href: href.toJS);
+    _sdk.openExternal(args);
   }
 
-  /// Get the bridge API version
-  String? get version {
-    if (!isAvailable) return null;
-
-    try {
-      final ver = _openai!.version;
-      return ver?.toDart;
-    } on Exception catch (e) {
-      _log('Error getting version: $e');
-      return null;
-    }
+  /// Request display mode
+  Future<OpenAiDisplayMode> requestDisplayMode(OpenAiDisplayMode mode) async {
+    final args = _JSRequestDisplayModeArgs(mode: mode.data.toJS);
+    final response = await _sdk.requestDisplayMode(args).toDart;
+    return RequestDisplayModeResponse.fromJson(
+      response.dartify()! as Map<String, dynamic>,
+    ).mode;
   }
 
-  /// Whether the current theme is dark mode
-  bool get isDarkMode => displayMode == 'dark';
-
-  /// Whether the current theme is light mode
-  bool get isLightMode => displayMode == 'light';
-
-  /// Whether the display is in compact mode
-  bool get isCompactMode => displayMode == 'compact';
-
-  // =========================================================================
-  // Communication Methods
-  // =========================================================================
-
-  /// Send a structured message to the parent window (ChatGPT)
-  void sendMessageToParent(Map<String, dynamic> message) {
-    try {
-      final jsonMessage = jsonEncode(message);
-      final jsMessage = jsonMessage.toJS;
-
-      final parent = web.window.parent;
-      if (parent != null && parent != web.window) {
-        parent.postMessage(jsMessage, '*'.toJS);
-        _log('Message sent: ${message['type']}');
-      } else {
-        _log('Parent window not available');
-      }
-    } on Exception catch (e) {
-      _log('Error sending message: $e');
-    }
+  /// Set widget state
+  Future<void> setWidgetState(Map<String, dynamic> state) async {
+    final jsState = state.jsify() as JSObject;
+    await _sdk.setWidgetState(jsState).toDart;
   }
 
-  /// Notify ChatGPT of a user action
-  ///
-  /// [action] - The action type (e.g., 'button_clicked', 'refresh_requested')
-  /// [data] - Optional data payload associated with the action
-  void notifyUserAction(String action, [Map<String, dynamic>? data]) {
-    sendMessageToParent({
-      'type': 'user_action',
-      'action': action,
-      'data': data ?? {},
-      'timestamp': DateTime.now().toIso8601String(),
-    });
-  }
+  Stream<OpenAiGlobals> get globalsStream => window.onSetOpenAIGlobals.map(
+    (event) => _globalsFromJS(event.detail!.globals),
+  );
 
-  /// Notify ChatGPT that the widget has loaded successfully
-  void notifyWidgetLoaded({Map<String, dynamic>? metadata}) {
-    notifyUserAction('widget_loaded', {
-      ...?metadata,
-      'widget_version': version ?? 'unknown',
-    });
-  }
+  Stream<OpenAiTheme> get themeStream => globalsStream
+      .where((globals) => globals.theme != null)
+      .map((globals) => globals.theme!)
+      .distinct();
 
-  /// Notify ChatGPT of an error
-  void notifyError(String error, [Map<String, dynamic>? context]) {
-    sendMessageToParent({
-      'type': 'error',
-      'error': error,
-      'context': context ?? {},
-      'timestamp': DateTime.now().toIso8601String(),
-    });
-  }
+  // Getters para globals
+  OpenAiTheme get theme => _sdk.theme.toOpenAiTheme() ?? OpenAiTheme.unknown;
 
-  /// Request data refresh from ChatGPT
-  void requestRefresh([Map<String, dynamic>? params]) {
-    notifyUserAction('refresh_requested', params);
-  }
+  String? get locale => _sdk.locale?.toDart;
 
-  // =========================================================================
-  // Event Handling
-  // =========================================================================
+  double? get maxHeight => _sdk.maxHeight?.toDartDouble;
 
-  /// Setup event listeners for bridge events
-  void _setupEventListeners() {
-    // Listen to tool response events
-    web.window.addEventListener(
-      'openai:tool_response',
-      _createToolResponseListener().toJS,
-    );
+  OpenAiDisplayMode? get displayMode => _sdk.displayMode.toOpenAiDisplayMode();
 
-    // Listen to theme change events
-    web.window.addEventListener(
-      'openai:theme_changed',
-      _createThemeChangeListener().toJS,
-    );
+  OpenAiDeviceType? get deviceType =>
+      _sdk.userAgent?.device.type.toOpenAiDeviceType();
 
-    // Start theme polling as fallback
-    _startThemePolling();
+  bool get hasHoverCapability =>
+      _sdk.userAgent?.capabilities.hover.toDart ?? false;
 
-    _log('Event listeners setup complete');
-  }
+  bool get hasTouchCapability =>
+      _sdk.userAgent?.capabilities.touch.toDart ?? false;
 
-  /// Create tool response event listener
-  void Function(web.Event) _createToolResponseListener() {
-    return (web.Event event) {
-      try {
-        if (event.isA<web.CustomEvent>()) {
-          final customEvent = event as web.CustomEvent;
-          final detail = customEvent.detail;
+  OpenAiSafeAreaInsets? get safeAreaInsets =>
+      _sdk.safeArea?.insets.toOpenAiSafeAreaInsets();
 
-          final dartData = _convertJSObjectToMap(detail);
-          _toolResponseController.add(dartData);
-          _log('Tool response received: ${dartData.keys.join(", ")}');
-        }
-      } on Exception catch (e) {
-        _log('Error processing tool response: $e');
-        _toolResponseController.addError(e);
-      }
-    };
-  }
+  Map<String, dynamic> get toolInput =>
+      _sdk.toolInput.dartify()! as Map<String, dynamic>;
 
-  /// Create theme change event listener
-  void Function(web.Event) _createThemeChangeListener() {
-    return (web.Event event) {
-      try {
-        if (event.isA<web.CustomEvent>()) {
-          final customEvent = event as web.CustomEvent;
-          final detail = customEvent.detail;
+  Map<String, dynamic>? get toolOutput =>
+      _sdk.toolOutput.dartify() as Map<String, dynamic>?;
 
-          final theme = _convertJSValueToString(detail);
-          if (theme != null && theme.isNotEmpty) {
-            _themeChangeController.add(theme);
-            _log('Theme changed: $theme');
-          }
-        }
-      } on Exception catch (e) {
-        _log('Error processing theme change: $e');
-      }
-    };
-  }
+  Map<String, dynamic>? get toolResponseMetadata =>
+      _sdk.toolResponseMetadata?.toJSBox as Map<String, dynamic>?;
 
-  /// Poll for theme changes (fallback mechanism)
-  String? _lastTheme;
-  void _startThemePolling() {
-    _lastTheme = displayMode;
-
-    Future.delayed(const Duration(seconds: 1), () {
-      if (_toolResponseController.isClosed) return;
-
-      final currentMode = displayMode;
-      if (currentMode != null &&
-          currentMode.isNotEmpty &&
-          currentMode != _lastTheme) {
-        _themeChangeController.add(currentMode);
-        _lastTheme = currentMode;
-        _log('Theme detected via polling: $currentMode');
-      }
-
-      _startThemePolling();
-    });
-  }
-
-  // =========================================================================
-  // JS Conversion Utilities
-  // =========================================================================
-
-  /// Convert a JS object/value to a Dart Map
-  Map<String, dynamic> _convertJSObjectToMap(js.JSAny? jsValue) {
-    if (jsValue == null) return {};
-
-    try {
-      // Use JSON stringify/parse for reliable conversion
-      final json = js.globalContext['JSON'] as js.JSObject?;
-      final stringify = json?['stringify'] as js.JSFunction?;
-
-      if (stringify != null) {
-        final jsonString = stringify.callAsFunction(json, jsValue);
-        if (jsonString != null && jsonString.isA<js.JSString>()) {
-          final dartString = (jsonString as js.JSString).toDart;
-          final decoded = jsonDecode(dartString);
-
-          if (decoded is Map) {
-            return Map<String, dynamic>.from(decoded);
-          }
-        }
-      }
-
-      // Fallback: try direct conversion
-      if (jsValue.isA<js.JSObject>()) {
-        return _jsObjectToMapFallback(jsValue as js.JSObject);
-      }
-
-      return {};
-    } on Exception catch (e) {
-      _log('Error converting JS to Map: $e');
-      return {};
-    }
-  }
-
-  /// Fallback method to convert JSObject to Map
-  Map<String, dynamic> _jsObjectToMapFallback(js.JSObject obj) {
-    final result = <String, dynamic>{};
-
-    try {
-      final keys = js.globalContext.callMethod(
-        'Object'.toJS,
-        'keys'.toJS,
-        obj,
-      );
-
-      if (keys != null && keys.isA<js.JSArray>()) {
-        final jsArray = keys as js.JSArray;
-        final length = jsArray.getProperty('length'.toJS) as js.JSNumber?;
-
-        final lengthInt = length?.toDartInt ?? 0;
-
-        for (var i = 0; i < lengthInt; i++) {
-          final key = jsArray[i];
-          if (key != null && key.isA<js.JSString>()) {
-            final dartKey = (key as js.JSString).toDart;
-            final value = obj.getProperty(key);
-            result[dartKey] = _convertJSValueToDart(value);
-          }
-        }
-      }
-    } on Exception catch (e) {
-      _log('Error in fallback conversion: $e');
-    }
-
-    return result;
-  }
-
-  /// Convert JS value to appropriate Dart type
-  dynamic _convertJSValueToDart(js.JSAny? value) {
-    if (value == null) return null;
-
-    try {
-      if (value.isA<js.JSString>()) {
-        return (value as js.JSString).toDart;
-      } else if (value.isA<js.JSNumber>()) {
-        return (value as js.JSNumber).toDartDouble;
-      } else if (value.isA<js.JSBoolean>()) {
-        return (value as js.JSBoolean).toDart;
-      } else if (value.isA<js.JSArray>()) {
-        final array = value as js.JSArray;
-        final length = array.getProperty('length'.toJS) as js.JSNumber?;
-
-        final lengthInt = length?.toDartInt ?? 0;
-        return List.generate(
-          lengthInt,
-          (i) => _convertJSValueToDart(array[i]),
-        );
-      } else if (value.isA<js.JSObject>()) {
-        return _jsObjectToMapFallback(value as js.JSObject);
-      }
-    } on Exception catch (e) {
-      _log('Error converting JS value: $e');
-    }
-
-    return null;
-  }
-
-  /// Convert JS value to String
-  String? _convertJSValueToString(js.JSAny? value) {
-    if (value == null) return null;
-
-    try {
-      if (value.isA<js.JSString>()) {
-        return (value as js.JSString).toDart;
-      }
-      // Try to convert to string
-      return value.toString();
-    } on Exception catch (e) {
-      _log('Error converting to string: $e');
-      return null;
-    }
-  }
-
-  // =========================================================================
-  // Utilities
-  // =========================================================================
-
-  /// Log message to browser console
-  void _log(String message) {
-    web.console.log('[OpenAIBridge] $message'.toJS);
-  }
-
-  /// Dispose and cleanup resources
-  Future<void> dispose() async {
-    await _toolResponseController.close();
-    await _themeChangeController.close();
-    _log('Bridge disposed');
-  }
+  Map<String, dynamic>? get widgetState =>
+      _sdk.widgetState.dartify() as Map<String, dynamic>?;
 }
