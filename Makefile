@@ -1,8 +1,8 @@
-.PHONY: gen clean buil_apk_relese
+.PHONY: gen clean watch
 
 
-gen: ## Generates the assets
-	@echo "╠ Generating the assets..."
+gen: ## Generates the code
+	@echo "╠ Generating the code..."
 	@flutter pub get
 	@dart pub run build_runner build --delete-conflicting-outputs
 

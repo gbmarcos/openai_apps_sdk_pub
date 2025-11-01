@@ -5,3 +5,17 @@
 .packages
 build/
 pubspec.lock
+
+
+# VS Code related
+.vscode/
+.idea/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages.generated
+.packages
+.pub-cache/
+.pub/
+build/
+flutter_*.png
+linked_*.ds

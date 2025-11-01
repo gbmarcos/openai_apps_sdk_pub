@@ -1,7 +1,7 @@
+import 'package:example/src/features/counter/counter.dart';
+import 'package:example/src/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:example/counter/counter.dart';
-import 'package:example/l10n/l10n.dart';
 import 'package:openai_apps_sdk/openai_apps_sdk.dart' hide OpenAiTheme;
 import 'package:ultimate_flutter_icons/ficon.dart';
 import 'package:ultimate_flutter_icons/icons/ai.dart';
@@ -23,7 +23,7 @@ class CounterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final openAiSdk = OpenAiSDK.instance;
+    final openAiSdk = OpenAiAppsSDKBridge.instance;
 
     dynamic getOpenAIDataSafely(dynamic Function() function) {
       try {

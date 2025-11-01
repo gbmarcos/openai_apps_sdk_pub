@@ -13,22 +13,22 @@ part of 'open_ai_globals.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
-mixin _$OpenAiGlobals {
+mixin _$PartialOpenAiGlobals {
 
 @JsonKey(unknownEnumValue: OpenAiTheme.unknown) OpenAiTheme? get theme; UserAgent? get userAgent; String? get locale; double? get maxHeight; OpenAiDisplayMode? get displayMode; OpenAiSafeArea? get safeArea;
-/// Create a copy of OpenAiGlobals
+/// Create a copy of PartialOpenAiGlobals
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$OpenAiGlobalsCopyWith<OpenAiGlobals> get copyWith => _$OpenAiGlobalsCopyWithImpl<OpenAiGlobals>(this as OpenAiGlobals, _$identity);
+$PartialOpenAiGlobalsCopyWith<PartialOpenAiGlobals> get copyWith => _$PartialOpenAiGlobalsCopyWithImpl<PartialOpenAiGlobals>(this as PartialOpenAiGlobals, _$identity);
 
-  /// Serializes this OpenAiGlobals to a JSON map.
+  /// Serializes this PartialOpenAiGlobals to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OpenAiGlobals&&(identical(other.theme, theme) || other.theme == theme)&&(identical(other.userAgent, userAgent) || other.userAgent == userAgent)&&(identical(other.locale, locale) || other.locale == locale)&&(identical(other.maxHeight, maxHeight) || other.maxHeight == maxHeight)&&(identical(other.displayMode, displayMode) || other.displayMode == displayMode)&&(identical(other.safeArea, safeArea) || other.safeArea == safeArea));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PartialOpenAiGlobals&&(identical(other.theme, theme) || other.theme == theme)&&(identical(other.userAgent, userAgent) || other.userAgent == userAgent)&&(identical(other.locale, locale) || other.locale == locale)&&(identical(other.maxHeight, maxHeight) || other.maxHeight == maxHeight)&&(identical(other.displayMode, displayMode) || other.displayMode == displayMode)&&(identical(other.safeArea, safeArea) || other.safeArea == safeArea));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -37,15 +37,15 @@ int get hashCode => Object.hash(runtimeType,theme,userAgent,locale,maxHeight,dis
 
 @override
 String toString() {
-  return 'OpenAiGlobals(theme: $theme, userAgent: $userAgent, locale: $locale, maxHeight: $maxHeight, displayMode: $displayMode, safeArea: $safeArea)';
+  return 'PartialOpenAiGlobals(theme: $theme, userAgent: $userAgent, locale: $locale, maxHeight: $maxHeight, displayMode: $displayMode, safeArea: $safeArea)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $OpenAiGlobalsCopyWith<$Res>  {
-  factory $OpenAiGlobalsCopyWith(OpenAiGlobals value, $Res Function(OpenAiGlobals) _then) = _$OpenAiGlobalsCopyWithImpl;
+abstract mixin class $PartialOpenAiGlobalsCopyWith<$Res>  {
+  factory $PartialOpenAiGlobalsCopyWith(PartialOpenAiGlobals value, $Res Function(PartialOpenAiGlobals) _then) = _$PartialOpenAiGlobalsCopyWithImpl;
 @useResult
 $Res call({
 @JsonKey(unknownEnumValue: OpenAiTheme.unknown) OpenAiTheme? theme, UserAgent? userAgent, String? locale, double? maxHeight, OpenAiDisplayMode? displayMode, OpenAiSafeArea? safeArea
@@ -56,14 +56,14 @@ $UserAgentCopyWith<$Res>? get userAgent;$OpenAiSafeAreaCopyWith<$Res>? get safeA
 
 }
 /// @nodoc
-class _$OpenAiGlobalsCopyWithImpl<$Res>
-    implements $OpenAiGlobalsCopyWith<$Res> {
-  _$OpenAiGlobalsCopyWithImpl(this._self, this._then);
+class _$PartialOpenAiGlobalsCopyWithImpl<$Res>
+    implements $PartialOpenAiGlobalsCopyWith<$Res> {
+  _$PartialOpenAiGlobalsCopyWithImpl(this._self, this._then);
 
-  final OpenAiGlobals _self;
-  final $Res Function(OpenAiGlobals) _then;
+  final PartialOpenAiGlobals _self;
+  final $Res Function(PartialOpenAiGlobals) _then;
 
-/// Create a copy of OpenAiGlobals
+/// Create a copy of PartialOpenAiGlobals
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? theme = freezed,Object? userAgent = freezed,Object? locale = freezed,Object? maxHeight = freezed,Object? displayMode = freezed,Object? safeArea = freezed,}) {
   return _then(_self.copyWith(
@@ -76,7 +76,7 @@ as OpenAiDisplayMode?,safeArea: freezed == safeArea ? _self.safeArea : safeArea 
 as OpenAiSafeArea?,
   ));
 }
-/// Create a copy of OpenAiGlobals
+/// Create a copy of PartialOpenAiGlobals
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -88,7 +88,7 @@ $UserAgentCopyWith<$Res>? get userAgent {
   return $UserAgentCopyWith<$Res>(_self.userAgent!, (value) {
     return _then(_self.copyWith(userAgent: value));
   });
-}/// Create a copy of OpenAiGlobals
+}/// Create a copy of PartialOpenAiGlobals
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -104,8 +104,8 @@ $OpenAiSafeAreaCopyWith<$Res>? get safeArea {
 }
 
 
-/// Adds pattern-matching-related methods to [OpenAiGlobals].
-extension OpenAiGlobalsPatterns on OpenAiGlobals {
+/// Adds pattern-matching-related methods to [PartialOpenAiGlobals].
+extension PartialOpenAiGlobalsPatterns on PartialOpenAiGlobals {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -118,10 +118,10 @@ extension OpenAiGlobalsPatterns on OpenAiGlobals {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _OpenAiGlobals value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PartialOpenAiGlobals value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _OpenAiGlobals() when $default != null:
+case _PartialOpenAiGlobals() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -140,10 +140,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _OpenAiGlobals value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PartialOpenAiGlobals value)  $default,){
 final _that = this;
 switch (_that) {
-case _OpenAiGlobals():
+case _PartialOpenAiGlobals():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -161,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _OpenAiGlobals value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PartialOpenAiGlobals value)?  $default,){
 final _that = this;
 switch (_that) {
-case _OpenAiGlobals() when $default != null:
+case _PartialOpenAiGlobals() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -184,7 +184,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: OpenAiTheme.unknown)  OpenAiTheme? theme,  UserAgent? userAgent,  String? locale,  double? maxHeight,  OpenAiDisplayMode? displayMode,  OpenAiSafeArea? safeArea)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _OpenAiGlobals() when $default != null:
+case _PartialOpenAiGlobals() when $default != null:
 return $default(_that.theme,_that.userAgent,_that.locale,_that.maxHeight,_that.displayMode,_that.safeArea);case _:
   return orElse();
 
@@ -205,7 +205,7 @@ return $default(_that.theme,_that.userAgent,_that.locale,_that.maxHeight,_that.d
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: OpenAiTheme.unknown)  OpenAiTheme? theme,  UserAgent? userAgent,  String? locale,  double? maxHeight,  OpenAiDisplayMode? displayMode,  OpenAiSafeArea? safeArea)  $default,) {final _that = this;
 switch (_that) {
-case _OpenAiGlobals():
+case _PartialOpenAiGlobals():
 return $default(_that.theme,_that.userAgent,_that.locale,_that.maxHeight,_that.displayMode,_that.safeArea);case _:
   throw StateError('Unexpected subclass');
 
@@ -225,7 +225,7 @@ return $default(_that.theme,_that.userAgent,_that.locale,_that.maxHeight,_that.d
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: OpenAiTheme.unknown)  OpenAiTheme? theme,  UserAgent? userAgent,  String? locale,  double? maxHeight,  OpenAiDisplayMode? displayMode,  OpenAiSafeArea? safeArea)?  $default,) {final _that = this;
 switch (_that) {
-case _OpenAiGlobals() when $default != null:
+case _PartialOpenAiGlobals() when $default != null:
 return $default(_that.theme,_that.userAgent,_that.locale,_that.maxHeight,_that.displayMode,_that.safeArea);case _:
   return null;
 
@@ -237,9 +237,9 @@ return $default(_that.theme,_that.userAgent,_that.locale,_that.maxHeight,_that.d
 /// @nodoc
 @JsonSerializable()
 
-class _OpenAiGlobals implements OpenAiGlobals {
-   _OpenAiGlobals({@JsonKey(unknownEnumValue: OpenAiTheme.unknown) this.theme, this.userAgent, this.locale, this.maxHeight, this.displayMode, this.safeArea});
-  factory _OpenAiGlobals.fromJson(Map<String, dynamic> json) => _$OpenAiGlobalsFromJson(json);
+class _PartialOpenAiGlobals implements PartialOpenAiGlobals {
+   _PartialOpenAiGlobals({@JsonKey(unknownEnumValue: OpenAiTheme.unknown) this.theme, this.userAgent, this.locale, this.maxHeight, this.displayMode, this.safeArea});
+  factory _PartialOpenAiGlobals.fromJson(Map<String, dynamic> json) => _$PartialOpenAiGlobalsFromJson(json);
 
 @override@JsonKey(unknownEnumValue: OpenAiTheme.unknown) final  OpenAiTheme? theme;
 @override final  UserAgent? userAgent;
@@ -248,20 +248,20 @@ class _OpenAiGlobals implements OpenAiGlobals {
 @override final  OpenAiDisplayMode? displayMode;
 @override final  OpenAiSafeArea? safeArea;
 
-/// Create a copy of OpenAiGlobals
+/// Create a copy of PartialOpenAiGlobals
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$OpenAiGlobalsCopyWith<_OpenAiGlobals> get copyWith => __$OpenAiGlobalsCopyWithImpl<_OpenAiGlobals>(this, _$identity);
+_$PartialOpenAiGlobalsCopyWith<_PartialOpenAiGlobals> get copyWith => __$PartialOpenAiGlobalsCopyWithImpl<_PartialOpenAiGlobals>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$OpenAiGlobalsToJson(this, );
+  return _$PartialOpenAiGlobalsToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OpenAiGlobals&&(identical(other.theme, theme) || other.theme == theme)&&(identical(other.userAgent, userAgent) || other.userAgent == userAgent)&&(identical(other.locale, locale) || other.locale == locale)&&(identical(other.maxHeight, maxHeight) || other.maxHeight == maxHeight)&&(identical(other.displayMode, displayMode) || other.displayMode == displayMode)&&(identical(other.safeArea, safeArea) || other.safeArea == safeArea));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PartialOpenAiGlobals&&(identical(other.theme, theme) || other.theme == theme)&&(identical(other.userAgent, userAgent) || other.userAgent == userAgent)&&(identical(other.locale, locale) || other.locale == locale)&&(identical(other.maxHeight, maxHeight) || other.maxHeight == maxHeight)&&(identical(other.displayMode, displayMode) || other.displayMode == displayMode)&&(identical(other.safeArea, safeArea) || other.safeArea == safeArea));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -270,15 +270,15 @@ int get hashCode => Object.hash(runtimeType,theme,userAgent,locale,maxHeight,dis
 
 @override
 String toString() {
-  return 'OpenAiGlobals(theme: $theme, userAgent: $userAgent, locale: $locale, maxHeight: $maxHeight, displayMode: $displayMode, safeArea: $safeArea)';
+  return 'PartialOpenAiGlobals(theme: $theme, userAgent: $userAgent, locale: $locale, maxHeight: $maxHeight, displayMode: $displayMode, safeArea: $safeArea)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$OpenAiGlobalsCopyWith<$Res> implements $OpenAiGlobalsCopyWith<$Res> {
-  factory _$OpenAiGlobalsCopyWith(_OpenAiGlobals value, $Res Function(_OpenAiGlobals) _then) = __$OpenAiGlobalsCopyWithImpl;
+abstract mixin class _$PartialOpenAiGlobalsCopyWith<$Res> implements $PartialOpenAiGlobalsCopyWith<$Res> {
+  factory _$PartialOpenAiGlobalsCopyWith(_PartialOpenAiGlobals value, $Res Function(_PartialOpenAiGlobals) _then) = __$PartialOpenAiGlobalsCopyWithImpl;
 @override @useResult
 $Res call({
 @JsonKey(unknownEnumValue: OpenAiTheme.unknown) OpenAiTheme? theme, UserAgent? userAgent, String? locale, double? maxHeight, OpenAiDisplayMode? displayMode, OpenAiSafeArea? safeArea
@@ -289,17 +289,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$OpenAiGlobalsCopyWithImpl<$Res>
-    implements _$OpenAiGlobalsCopyWith<$Res> {
-  __$OpenAiGlobalsCopyWithImpl(this._self, this._then);
+class __$PartialOpenAiGlobalsCopyWithImpl<$Res>
+    implements _$PartialOpenAiGlobalsCopyWith<$Res> {
+  __$PartialOpenAiGlobalsCopyWithImpl(this._self, this._then);
 
-  final _OpenAiGlobals _self;
-  final $Res Function(_OpenAiGlobals) _then;
+  final _PartialOpenAiGlobals _self;
+  final $Res Function(_PartialOpenAiGlobals) _then;
 
-/// Create a copy of OpenAiGlobals
+/// Create a copy of PartialOpenAiGlobals
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? theme = freezed,Object? userAgent = freezed,Object? locale = freezed,Object? maxHeight = freezed,Object? displayMode = freezed,Object? safeArea = freezed,}) {
-  return _then(_OpenAiGlobals(
+  return _then(_PartialOpenAiGlobals(
 theme: freezed == theme ? _self.theme : theme // ignore: cast_nullable_to_non_nullable
 as OpenAiTheme?,userAgent: freezed == userAgent ? _self.userAgent : userAgent // ignore: cast_nullable_to_non_nullable
 as UserAgent?,locale: freezed == locale ? _self.locale : locale // ignore: cast_nullable_to_non_nullable
@@ -310,7 +310,7 @@ as OpenAiSafeArea?,
   ));
 }
 
-/// Create a copy of OpenAiGlobals
+/// Create a copy of PartialOpenAiGlobals
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -322,7 +322,7 @@ $UserAgentCopyWith<$Res>? get userAgent {
   return $UserAgentCopyWith<$Res>(_self.userAgent!, (value) {
     return _then(_self.copyWith(userAgent: value));
   });
-}/// Create a copy of OpenAiGlobals
+}/// Create a copy of PartialOpenAiGlobals
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

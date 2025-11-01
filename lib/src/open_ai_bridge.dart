@@ -1,210 +1,705 @@
+/// Dart bridge for the OpenAI Apps JavaScript SDK.
+///
+/// This library provides a high-level Dart API that wraps the low-level
+/// JavaScript interop types, offering a more idiomatic Dart interface for
+/// interacting with the OpenAI Apps platform within ChatGPT.
+///
+/// ## Key Features
+/// - **Type-safe API**: Converts JavaScript types to Dart-native types
+/// - **Reactive streams**: Observable streams for global state changes
+/// - **Singleton pattern**: Single instance ensures consistent state
+/// - **Async/await support**: Promise-based APIs converted to Dart Futures
+///
+/// ## Usage
+/// Access the singleton instance to interact with the OpenAI Apps API:
+/// ```dart
+/// final bridge = OpenAiAppsSDKBridge.instance;
+///
+/// // Get current theme
+/// final theme = bridge.theme;
+///
+/// // Listen to theme changes
+/// bridge.themeStream.listen((newTheme) {
+///   print('Theme changed to: $newTheme');
+/// });
+///
+/// // Call a tool
+/// final result = await bridge.callTool('myTool', {'param': 'value'});
+///
+/// // Request fullscreen mode
+/// await bridge.requestDisplayMode(OpenAiDisplayMode.fullscreen);
+/// ```
+library;
+
 import 'dart:js_interop';
 
 import 'package:openai_apps_sdk/src/data/models.dart';
+import 'package:openai_apps_sdk/src/open_ai_types.dart';
 import 'package:web/web.dart';
 
-/// SafeAreaInsets
-@JS()
-@anonymous
-extension type _JSSafeAreaInsets._(JSObject _) implements JSObject {
-  external factory _JSSafeAreaInsets({
-    JSNumber top,
-    JSNumber bottom,
-    JSNumber left,
-    JSNumber right,
-  });
+/// Bridge class providing a Dart-friendly interface to the OpenAI Apps JavaScript API.
+///
+/// This class acts as an adapter layer between the low-level JavaScript interop
+/// types and idiomatic Dart code. It provides:
+/// - Type conversion from JavaScript to Dart types
+/// - Reactive streams for state changes
+/// - Simplified method signatures
+/// - Future-based async operations
+///
+/// ## Singleton Pattern
+/// This class uses the singleton pattern to ensure there's only one instance
+/// throughout your application's lifecycle, maintaining consistent state and
+/// event subscriptions.
+///
+/// ## Example
+/// ```dart
+/// final sdk = OpenAiAppsSDKBridge.instance;
+///
+/// // Access global properties
+/// print('Current theme: ${sdk.theme}');
+/// print('Device type: ${sdk.deviceType}');
+///
+/// // Call tools
+/// final response = await sdk.callTool('getUserData', {'userId': 42});
+///
+/// // Listen to changes
+/// sdk.displayModeStream.listen((mode) {
+///   print('Display mode changed to: $mode');
+/// });
+/// ```
+class OpenAiAppsSDKBridge {
+  /// Private constructor for singleton pattern.
+  OpenAiAppsSDKBridge._(this._openai);
 
-  external JSNumber get top;
-  external JSNumber get bottom;
-  external JSNumber get left;
-  external JSNumber get right;
+  static OpenAiAppsSDKBridge? _instance;
+
+  /// Gets the singleton instance of the OpenAI Apps SDK Bridge.
+  ///
+  /// This is the primary entry point for accessing the OpenAI Apps API
+  /// from Dart code. The instance is lazily initialized on first access.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final sdk = OpenAiAppsSDKBridge.instance;
+  /// final theme = sdk.theme;
+  /// ```
+  static OpenAiAppsSDKBridge get instance {
+    _instance ??= OpenAiAppsSDKBridge._(window.openai);
+    return _instance!;
+  }
+
+  /// The underlying JavaScript API instance.
+  final JSAPI_AND_OpenAiGlobals _openai;
+
+  /// Internal helper to convert JavaScript globals to Dart types.
+  PartialOpenAiGlobals _globalsFromJS(JSPartialOpenAiGlobals globals) =>
+      PartialOpenAiGlobals(
+        theme: globals.theme.toOpenAiTheme(),
+        locale: globals.locale?.toDart,
+        maxHeight: globals.maxHeight?.toDartDouble,
+        displayMode: globals.displayMode.toOpenAiDisplayMode(),
+        safeArea: globals.safeArea?.toOpenAiSafeArea(),
+        userAgent: globals.userAgent?.toUserAgent(),
+      );
+
+  // ============================================================================
+  // API Methods
+  // ============================================================================
+
+  /// Invokes a tool on your Model Context Protocol (MCP) server.
+  ///
+  /// This method calls a backend tool defined in your MCP server configuration
+  /// and returns the result as a string. The tool must be registered in your
+  /// MCP server and the name must match exactly.
+  ///
+  /// ## Parameters
+  /// - [name]: The name of the tool to invoke (case-sensitive)
+  /// - [args]: A map of arguments to pass to the tool, matching the tool's schema
+  ///
+  /// ## Returns
+  /// A [Future] that resolves to the tool's result as a string. Typically this
+  /// will be a JSON-encoded string that you'll need to parse.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final result = await sdk.callTool(
+  ///   'getUserData',
+  ///   {'userId': 42, 'includeProfile': true},
+  /// );
+  /// final data = jsonDecode(result);
+  /// print('User name: ${data['name']}');
+  /// ```
+  ///
+  /// ## Throws
+  /// - May throw if the tool doesn't exist or if the arguments are invalid
+  /// - May throw if the MCP server is unreachable or returns an error
+  Future<String> callTool(
+    String name,
+    Json args,
+  ) async {
+    final jsArgs = args.jsify()! as JSObject;
+    final promise = _openai.callTool(name.toJS, jsArgs);
+
+    final response = await promise.toDart;
+    return response.result.toDart;
+  }
+
+  /// Triggers a follow-up message in the ChatGPT conversation.
+  ///
+  /// This method programmatically sends a message to ChatGPT on behalf of
+  /// the user, allowing your app to guide the conversation flow or request
+  /// additional information from the AI.
+  ///
+  /// ## Parameters
+  /// - [prompt]: The message text to send to ChatGPT
+  ///
+  /// ## Returns
+  /// A [Future] that completes when the message has been sent.
+  ///
+  /// ## Example
+  /// ```dart
+  /// await sdk.sendFollowUpMessage(
+  ///   'Can you explain this data in more detail?'
+  /// );
+  /// ```
+  ///
+  /// ## Use Cases
+  /// - Requesting clarification or additional details
+  /// - Guiding the user through a multi-step workflow
+  /// - Automatically asking follow-up questions based on user actions
+  Future<void> sendFollowUpMessage(String prompt) async {
+    final args = JSSendFollowUpMessageArgs(prompt: prompt.toJS);
+    await _openai.sendFollowUpMessage(args).toDart;
+  }
+
+  /// Opens an external URL in a new browser tab or application.
+  ///
+  /// This method navigates the user to an external resource while keeping
+  /// the ChatGPT session active. The behavior varies by platform.
+  ///
+  /// ## Parameters
+  /// - [href]: The URL to open (must be a valid HTTP or HTTPS URL)
+  ///
+  /// ## Example
+  /// ```dart
+  /// sdk.openExternal('https://docs.example.com/api');
+  /// ```
+  ///
+  /// ## Platform Behavior
+  /// - **Web**: Opens the URL in a new browser tab
+  /// - **Mobile**: May open in an in-app browser or external browser app
+  /// - **Desktop**: Opens in the user's default web browser
+  ///
+  /// ## Security
+  /// Only HTTPS URLs are recommended for security. Some platforms may
+  /// block non-HTTPS URLs or show security warnings.
+  void openExternal(String href) {
+    final args = JSOpenExternalArgs(href: href.toJS);
+    _openai.openExternal(args);
+  }
+
+  /// Requests a change in the app's display mode.
+  ///
+  /// This method attempts to transition the app between different display
+  /// modes (inline, fullscreen, or picture-in-picture). The request may be
+  /// denied or modified by the ChatGPT runtime based on platform constraints.
+  ///
+  /// ## Parameters
+  /// - [mode]: The desired display mode to transition to
+  ///
+  /// ## Returns
+  /// A [Future] that resolves to the actually granted display mode, which
+  /// may differ from the requested mode if the runtime denied or modified
+  /// the request.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final grantedMode = await sdk.requestDisplayMode(
+  ///   OpenAiDisplayMode.fullscreen,
+  /// );
+  ///
+  /// if (grantedMode == OpenAiDisplayMode.fullscreen) {
+  ///   // Successfully transitioned to fullscreen
+  ///   print('Now in fullscreen mode');
+  /// } else {
+  ///   // Request was denied or modified
+  ///   print('Could not enter fullscreen, got: $grantedMode');
+  /// }
+  /// ```
+  ///
+  /// ## Platform Notes
+  /// - On mobile, PiP requests are always coerced to fullscreen
+  /// - Some platforms may not support all display modes
+  /// - User preferences or system policies may prevent certain transitions
+  Future<OpenAiDisplayMode> requestDisplayMode(OpenAiDisplayMode mode) async {
+    final args = JSRequestDisplayModeArgs(
+      mode: switch (mode) {
+        OpenAiDisplayMode.pip => JSDisplayMode.pip,
+        OpenAiDisplayMode.inline => JSDisplayMode.inline,
+        OpenAiDisplayMode.fullscreen => JSDisplayMode.fullscreen,
+        OpenAiDisplayMode.unknown => JSDisplayMode.inline,
+      },
+    );
+    final response = await _openai.requestDisplayMode(args).toDart;
+    return response.mode.toOpenAiDisplayMode()!;
+  }
+
+  /// Updates the persistent widget state.
+  ///
+  /// In widget mode, this method allows you to persist state that survives
+  /// across sessions. The state is stored by ChatGPT and can be retrieved
+  /// via the [widgetState] getter.
+  ///
+  /// ## Parameters
+  /// - [state]: A map containing the state to persist (must be JSON-serializable)
+  ///
+  /// ## Returns
+  /// A [Future] that completes when the state has been saved.
+  ///
+  /// ## Example
+  /// ```dart
+  /// await sdk.setWidgetState({
+  ///   'counter': 42,
+  ///   'lastUpdated': DateTime.now().toIso8601String(),
+  ///   'preferences': {
+  ///     'theme': 'dark',
+  ///     'notifications': true,
+  ///   },
+  /// });
+  ///
+  /// // Later, retrieve the state
+  /// final state = sdk.widgetState;
+  /// print('Counter value: ${state?['counter']}');
+  /// ```
+  ///
+  /// ## Constraints
+  /// - Only available in widget mode
+  /// - State must be JSON-serializable (no functions, symbols, etc.)
+  /// - Consider size limitations - keep state reasonably small
+  /// - State persists across sessions but may be cleared by ChatGPT
+  Future<void> setWidgetState(Json state) async {
+    final jsState = state.jsify()! as JSObject;
+    await _openai.setWidgetState(jsState).toDart;
+  }
+
+  // ============================================================================
+  // Reactive Streams
+  // ============================================================================
+
+  /// A broadcast stream of all global state changes.
+  ///
+  /// This stream emits a [PartialOpenAiGlobals] object whenever any global
+  /// property changes (theme, locale, displayMode, maxHeight, safeArea, etc.).
+  /// Only the properties that changed will be non-null in the emitted object.
+  ///
+  /// ## Example
+  /// ```dart
+  /// sdk.globalsStream.listen((globals) {
+  ///   if (globals.theme != null) {
+  ///     print('Theme changed to: ${globals.theme}');
+  ///   }
+  ///   if (globals.displayMode != null) {
+  ///     print('Display mode changed to: ${globals.displayMode}');
+  ///   }
+  ///   if (globals.maxHeight != null) {
+  ///     print('Max height changed to: ${globals.maxHeight}');
+  ///   }
+  /// });
+  /// ```
+  ///
+  /// ## Use Cases
+  /// - Responding to multiple types of state changes with a single subscription
+  /// - Debugging to see all state changes
+  /// - Implementing complex state synchronization logic
+  ///
+  /// For listening to specific properties, consider using [themeStream] or
+  /// [displayModeStream] instead for more focused subscriptions.
+  Stream<PartialOpenAiGlobals> get globalsStream =>
+      window.onSetOpenAIGlobals.map(
+        (event) => _globalsFromJS(event.detail!.globals),
+      );
+
+  /// A broadcast stream of theme changes.
+  ///
+  /// This stream emits whenever the ChatGPT theme changes between light and
+  /// dark modes. The stream automatically filters out non-theme changes and
+  /// deduplicates consecutive identical values.
+  ///
+  /// ## Example
+  /// ```dart
+  /// sdk.themeStream.listen((theme) {
+  ///   switch (theme) {
+  ///     case OpenAiTheme.light:
+  ///       // Apply light theme to your app
+  ///       break;
+  ///     case OpenAiTheme.dark:
+  ///       // Apply dark theme to your app
+  ///       break;
+  ///     case OpenAiTheme.unknown:
+  ///       // Fallback to default theme
+  ///       break;
+  ///   }
+  /// });
+  /// ```
+  ///
+  /// ## Usage with Flutter
+  /// ```dart
+  /// StreamBuilder<OpenAiTheme>(
+  ///   stream: sdk.themeStream,
+  ///   initialData: sdk.theme,
+  ///   builder: (context, snapshot) {
+  ///     final isDark = snapshot.data == OpenAiTheme.dark;
+  ///     return MaterialApp(
+  ///       theme: isDark ? darkTheme : lightTheme,
+  ///       // ...
+  ///     );
+  ///   },
+  /// )
+  /// ```
+  Stream<OpenAiTheme> get themeStream => globalsStream
+      .where((globals) => globals.theme != null)
+      .map((globals) => globals.theme!)
+      .distinct();
+
+  /// A broadcast stream of display mode changes.
+  ///
+  /// This stream emits whenever the app's display mode changes (e.g., from
+  /// inline to fullscreen). The stream automatically filters out non-display
+  /// mode changes and deduplicates consecutive identical values.
+  ///
+  /// ## Example
+  /// ```dart
+  /// sdk.displayModeStream.listen((mode) {
+  ///   switch (mode) {
+  ///     case OpenAiDisplayMode.inline:
+  ///       // Optimize UI for inline display (limited space)
+  ///       break;
+  ///     case OpenAiDisplayMode.fullscreen:
+  ///       // Expand UI to use full screen
+  ///       break;
+  ///     case OpenAiDisplayMode.pip:
+  ///       // Minimize UI for picture-in-picture
+  ///       break;
+  ///     case OpenAiDisplayMode.unknown:
+  ///       // Use default layout
+  ///       break;
+  ///   }
+  /// });
+  /// ```
+  ///
+  /// ## Use Cases
+  /// - Adjusting layout based on available space
+  /// - Showing/hiding UI elements based on display mode
+  /// - Responding to user-initiated or system-initiated mode changes
+  Stream<OpenAiDisplayMode> get displayModeStream => globalsStream
+      .where((globals) => globals.displayMode != null)
+      .map((globals) => globals.displayMode!)
+      .distinct();
+
+  // ============================================================================
+  // Global State Getters
+  // ============================================================================
+
+  /// The current theme of the ChatGPT interface.
+  ///
+  /// Your app should adapt its visual appearance to match this theme for a
+  /// seamless integration with ChatGPT. This getter provides immediate access
+  /// to the current theme without needing to subscribe to a stream.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final theme = sdk.theme;
+  /// final isDarkMode = theme == OpenAiTheme.dark;
+  /// ```
+  ///
+  /// For reactive updates, use [themeStream] instead.
+  OpenAiTheme get theme => _openai.theme.toOpenAiTheme()!;
+
+  /// The user's preferred locale (e.g., 'en-US', 'es-ES', 'fr-FR').
+  ///
+  /// Use this to localize your app's content to match the user's language
+  /// preference. Returns null if the locale is not available.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final locale = sdk.locale;
+  /// if (locale != null) {
+  ///   print('User locale: $locale');
+  ///   // Load appropriate translations
+  /// }
+  /// ```
+  ///
+  /// ## Flutter Integration
+  /// ```dart
+  /// MaterialApp(
+  ///   locale: sdk.locale != null ? Locale(sdk.locale!) : null,
+  ///   localizationsDelegates: [...],
+  ///   // ...
+  /// )
+  /// ```
+  String? get locale => _openai.locale?.toDart;
+
+  /// The maximum height available for your app in pixels.
+  ///
+  /// Your app should not exceed this height to ensure proper display within
+  /// the ChatGPT interface. This value may change dynamically as the user
+  /// resizes their window or changes display modes.
+  ///
+  /// Returns null if no height constraint is set.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final maxHeight = sdk.maxHeight;
+  /// if (maxHeight != null) {
+  ///   print('Max available height: $maxHeight pixels');
+  /// }
+  /// ```
+  ///
+  /// ## Flutter Integration
+  /// ```dart
+  /// Container(
+  ///   constraints: BoxConstraints(
+  ///     maxHeight: sdk.maxHeight ?? double.infinity,
+  ///   ),
+  ///   child: yourContent,
+  /// )
+  /// ```
+  double? get maxHeight => _openai.maxHeight?.toDartDouble;
+
+  /// The current display mode of your app.
+  ///
+  /// Indicates how your app is currently being displayed within ChatGPT.
+  /// Possible values are inline, fullscreen, pip, or unknown.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final mode = sdk.displayMode;
+  /// if (mode == OpenAiDisplayMode.fullscreen) {
+  ///   // App is in fullscreen, can use more space
+  /// }
+  /// ```
+  ///
+  /// To request a display mode change, use [requestDisplayMode].
+  /// For reactive updates, use [displayModeStream].
+  OpenAiDisplayMode get displayMode =>
+      _openai.displayMode.toOpenAiDisplayMode()!;
+
+  /// The type of device the app is running on.
+  ///
+  /// Returns the device classification: mobile, tablet, desktop, or unknown.
+  /// Use this to optimize your UI for different screen sizes and form factors.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final deviceType = sdk.deviceType;
+  /// switch (deviceType) {
+  ///   case OpenAiDeviceType.mobile:
+  ///     // Show mobile-optimized UI
+  ///     break;
+  ///   case OpenAiDeviceType.tablet:
+  ///     // Show tablet-optimized UI
+  ///     break;
+  ///   case OpenAiDeviceType.desktop:
+  ///     // Show desktop-optimized UI
+  ///     break;
+  ///   default:
+  ///     // Fallback to responsive design
+  ///     break;
+  /// }
+  /// ```
+  OpenAiDeviceType? get deviceType =>
+      _openai.userAgent.device.type.toOpenAiDeviceType();
+
+  /// Whether the device supports hover interactions.
+  ///
+  /// Returns `true` for devices with mouse or trackpad input (typically
+  /// desktop and laptop computers), `false` for touch-only devices.
+  ///
+  /// Use this to conditionally enable hover effects, tooltips, and other
+  /// mouse-specific interactions.
+  ///
+  /// ## Example
+  /// ```dart
+  /// if (sdk.hasHoverCapability) {
+  ///   // Show hover tooltips and effects
+  /// } else {
+  ///   // Use tap-based alternatives
+  /// }
+  /// ```
+  bool get hasHoverCapability => _openai.userAgent.capabilities.hover.toDart;
+
+  /// Whether the device supports touch input.
+  ///
+  /// Returns `true` for touchscreen devices (phones, tablets, touch-enabled
+  /// laptops), `false` for devices with only mouse/keyboard input.
+  ///
+  /// Use this to enable touch gestures and adjust touch target sizes.
+  ///
+  /// ## Example
+  /// ```dart
+  /// if (sdk.hasTouchCapability) {
+  ///   // Enable touch gestures (swipe, pinch, etc.)
+  ///   // Increase touch target sizes (minimum 48x48 dp)
+  /// }
+  /// ```
+  bool get hasTouchCapability => _openai.userAgent.capabilities.touch.toDart;
+
+  /// The safe area insets for proper content positioning.
+  ///
+  /// Returns the padding needed on each side of your app to avoid overlapping
+  /// with system UI elements like notches, rounded corners, status bars, and
+  /// navigation bars.
+  ///
+  /// Returns null if safe area information is not available.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final insets = sdk.safeAreaInsets;
+  /// if (insets != null) {
+  ///   print('Top inset: ${insets.top} pixels');
+  ///   print('Bottom inset: ${insets.bottom} pixels');
+  /// }
+  /// ```
+  ///
+  /// ## Flutter Integration
+  /// ```dart
+  /// final insets = sdk.safeAreaInsets;
+  /// if (insets != null) {
+  ///   return Padding(
+  ///     padding: EdgeInsets.only(
+  ///       top: insets.top,
+  ///       bottom: insets.bottom,
+  ///       left: insets.left,
+  ///       right: insets.right,
+  ///     ),
+  ///     child: yourContent,
+  ///   );
+  /// }
+  /// ```
+  OpenAiSafeAreaInsets? get safeAreaInsets =>
+      _openai.safeArea?.insets.toOpenAiSafeAreaInsets();
+
+  /// The input parameters passed to your tool when it was invoked.
+  ///
+  /// This map contains the arguments specified in your tool's schema when
+  /// ChatGPT called your tool. Use this to access the parameters that
+  /// triggered your app's display.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final input = sdk.toolInput;
+  /// final userId = input['userId'];
+  /// final options = input['options'] as Map<String, dynamic>?;
+  /// print('Tool invoked with user ID: $userId');
+  /// ```
+  ///
+  /// ## Tool Schema Example
+  /// If your MCP tool is defined as:
+  /// ```json
+  /// {
+  ///   "name": "showUserProfile",
+  ///   "parameters": {
+  ///     "userId": { "type": "number" },
+  ///     "includeDetails": { "type": "boolean" }
+  ///   }
+  /// }
+  /// ```
+  ///
+  /// Then `toolInput` might contain:
+  /// ```dart
+  /// {'userId': 42, 'includeDetails': true}
+  /// ```
+  Json get toolInput => _openai.toolInput.dartify()! as Json;
+
+  /// The output from the most recent tool execution.
+  ///
+  /// This map contains the result of the last tool that was called.
+  /// Returns null if no tool has been executed or if the tool hasn't
+  /// produced output yet.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final output = sdk.toolOutput;
+  /// if (output != null) {
+  ///   final result = output['result'];
+  ///   print('Last tool output: $result');
+  /// }
+  /// ```
+  Json? get toolOutput => _openai.toolOutput.dartify() as Json?;
+
+  /// Metadata associated with the tool response.
+  ///
+  /// Contains additional information about how the tool execution was
+  /// processed, including timing, errors, or other contextual data.
+  ///
+  /// Returns null if no metadata is available.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final metadata = sdk.toolResponseMetadata;
+  /// if (metadata != null) {
+  ///   final executionTime = metadata['executionTime'];
+  ///   print('Tool took $executionTime ms to execute');
+  /// }
+  /// ```
+  Json? get toolResponseMetadata =>
+      _openai.toolResponseMetadata?.toJSBox as Json?;
+
+  /// The persistent widget state.
+  ///
+  /// In widget mode, this contains state that persists across sessions.
+  /// Use [setWidgetState] to update this value.
+  ///
+  /// Returns null if:
+  /// - The app is not in widget mode
+  /// - No state has been set yet
+  /// - The state was cleared by ChatGPT
+  ///
+  /// ## Example
+  /// ```dart
+  /// // Restore state on app start
+  /// final state = sdk.widgetState;
+  /// if (state != null) {
+  ///   final counter = state['counter'] ?? 0;
+  ///   final lastUpdated = state['lastUpdated'];
+  ///   print('Restored counter: $counter');
+  /// }
+  ///
+  /// // Update state
+  /// await sdk.setWidgetState({
+  ///   'counter': counter + 1,
+  ///   'lastUpdated': DateTime.now().toIso8601String(),
+  /// });
+  /// ```
+  ///
+  /// ## Best Practices
+  /// - Keep state small and focused
+  /// - Always handle null case (state may be cleared)
+  /// - Use JSON-serializable types only
+  /// - Consider state versioning for schema changes
+  Json? get widgetState => _openai.widgetState.dartify() as Json?;
 }
 
-/// SafeArea
-@JS()
-@anonymous
-extension type _JSSafeArea._(JSObject _) implements JSObject {
-  external factory _JSSafeArea({_JSSafeAreaInsets insets});
-  external _JSSafeAreaInsets get insets;
-}
+// ============================================================================
+// Type Aliases
+// ============================================================================
 
-/// UserAgentCapabilities
-@JS()
-@anonymous
-extension type _JSUserAgentCapabilities._(JSObject _) implements JSObject {
-  external factory _JSUserAgentCapabilities({
-    JSBoolean hover,
-    JSBoolean touch,
-  });
+/// Type alias for JSON-serializable maps.
+///
+/// Used throughout the SDK to represent JSON data structures that can be
+/// passed between Dart and JavaScript.
+typedef Json = Map<String, dynamic>;
 
-  external JSBoolean get hover;
-  external JSBoolean get touch;
-}
+// ============================================================================
+// Internal Type Conversion Extensions
+// ============================================================================
 
-/// UserAgentDevice
-@JS()
-@anonymous
-extension type _JSUserAgentDevice._(JSObject _) implements JSObject {
-  external factory _JSUserAgentDevice({JSString type});
-  external JSString get type;
-}
-
-/// UserAgent
-@JS()
-@anonymous
-extension type _JSUserAgent._(JSObject _) implements JSObject {
-  external factory _JSUserAgent({
-    _JSUserAgentDevice device,
-    _JSUserAgentCapabilities capabilities,
-  });
-
-  external _JSUserAgentDevice get device;
-  external _JSUserAgentCapabilities get capabilities;
-}
-
-/// CallToolResponse
-@JS()
-@anonymous
-extension type _JSCallToolResponse._(JSObject _) implements JSObject {
-  external factory _JSCallToolResponse();
-  // Añade aquí las propiedades específicas de CallToolResponse según tu API
-}
-
-/// SendFollowUpMessageArgs
-@JS()
-@anonymous
-extension type _JSSendFollowUpMessageArgs._(JSObject _) implements JSObject {
-  external factory _JSSendFollowUpMessageArgs({JSString prompt});
-  external JSString get prompt;
-}
-
-/// OpenExternalArgs
-@JS()
-@anonymous
-extension type _JSOpenExternalArgs._(JSObject _) implements JSObject {
-  external factory _JSOpenExternalArgs({JSString href});
-  external JSString get href;
-}
-
-/// RequestDisplayModeArgs
-@JS()
-@anonymous
-extension type _JSRequestDisplayModeArgs._(JSObject _) implements JSObject {
-  external factory _JSRequestDisplayModeArgs({JSString mode});
-  external JSString get mode;
-}
-
-/// RequestDisplayModeResponse
-@JS()
-@anonymous
-extension type _JSRequestDisplayModeResponse._(JSObject _) implements JSObject {
-  external JSString get mode;
-}
-
-/// OpenAI API
-@JS()
-@anonymous
-extension type _JSOpenAiAPI._(JSObject _) implements JSObject {
-  /// Calls a tool on your MCP. Returns the full response.
-  external JSPromise<_JSCallToolResponse> callTool(
-    JSString name,
-    JSObject args,
-  );
-
-  /// Triggers a followup turn in the ChatGPT conversation
-  external JSPromise<JSAny?> sendFollowUpMessage(
-    _JSSendFollowUpMessageArgs args,
-  );
-
-  /// Opens an external link, redirects web page or mobile app
-  external void openExternal(_JSOpenExternalArgs payload);
-
-  /// For transitioning an app from inline to fullscreen or pip
-  external JSPromise<_JSRequestDisplayModeResponse> requestDisplayMode(
-    _JSRequestDisplayModeArgs args,
-  );
-
-  /// Sets the widget state
-  external JSPromise<JSAny?> setWidgetState(JSObject state);
-}
-
-/// OpenAI Globals
-@JS()
-@anonymous
-extension type _JSOpenAiGlobals._(JSObject _) implements JSObject {
-  external JSString? get theme;
-  external _JSUserAgent? get userAgent;
-  external JSString? get locale;
-  external JSNumber? get maxHeight;
-  external JSString? get displayMode;
-  external _JSSafeArea? get safeArea;
-  external JSObject? get toolInput;
-  external JSObject? get toolOutput;
-  external JSObject? get toolResponseMetadata;
-  external JSObject? get widgetState;
-}
-
-/// OpenAI SDK - Combina API y Globals
-@JS()
-@anonymous
-extension type _JSOpenAiSDK._(JSObject _)
-    implements _JSOpenAiAPI, _JSOpenAiGlobals {}
-
-@JS()
-@anonymous
-extension type _JSSetGlobalsEventDetail._(JSObject _) implements JSObject {
-  external _JSOpenAiGlobals get globals;
-}
-
-@JS()
-@anonymous
-extension type _JSSetGlobalsEvent._(JSObject _)
-    implements CustomEvent, JSObject {
-  external factory _JSSetGlobalsEvent(
-    String type, [
-    _JSSetGlobalsEventInit eventInitDict,
-  ]);
-
-  external void initSetGlobalsEvent(
-    String type, [
-    bool bubbles,
-    bool cancelable,
-    _JSSetGlobalsEventDetail? detail,
-  ]);
-
-  external _JSSetGlobalsEventDetail? get detail;
-}
-
-@JS()
-@anonymous
-extension type _JSSetGlobalsEventInit._(JSObject _)
-    implements CustomEventInit, JSObject {
-  external factory _JSSetGlobalsEventInit({
-    bool bubbles,
-    bool cancelable,
-    bool composed,
-    _JSSetGlobalsEventDetail? detail,
-  });
-
-  external _JSSetGlobalsEventDetail? get detail;
-  external set detail(_JSSetGlobalsEventDetail? value);
-}
-
-/// Event listener para cambios globales
-const setGlobalsEventType = 'openai:set_globals';
-
-/// Window extension para acceder a window.openai
-extension _WindowOpenAI on Window {
-  external _JSOpenAiSDK get openai;
-
-  /// Stream for set globals events
-  Stream<_JSSetGlobalsEvent> get onSetOpenAIGlobals =>
-      const EventStreamProvider<_JSSetGlobalsEvent>(
-        setGlobalsEventType,
-      ).forTarget(this);
-}
-
-extension _JSStringToEnum on JSString? {
+/// Extension to convert JavaScript theme values to Dart [OpenAiTheme] enum.
+extension _JSThemeToOpenAiTheme on JSTheme? {
+  /// Converts a [JSTheme] to [OpenAiTheme].
+  ///
+  /// Returns [OpenAiTheme.unknown] if the theme value is not recognized.
+  /// Returns null if this is null.
   OpenAiTheme? toOpenAiTheme() {
     if (this == null) return null;
     return OpenAiTheme.values.firstWhere(
@@ -212,7 +707,14 @@ extension _JSStringToEnum on JSString? {
       orElse: () => OpenAiTheme.unknown,
     );
   }
+}
 
+/// Extension to convert JavaScript display mode to Dart [OpenAiDisplayMode] enum.
+extension _JSDisplayModeToOpenAiDisplayMode on JSDisplayMode? {
+  /// Converts a [JSDisplayMode] to [OpenAiDisplayMode].
+  ///
+  /// Returns [OpenAiDisplayMode.unknown] if the mode is not recognized.
+  /// Returns null if this is null.
   OpenAiDisplayMode? toOpenAiDisplayMode() {
     if (this == null) return null;
     return OpenAiDisplayMode.values.firstWhere(
@@ -220,7 +722,14 @@ extension _JSStringToEnum on JSString? {
       orElse: () => OpenAiDisplayMode.unknown,
     );
   }
+}
 
+/// Extension to convert JavaScript device type to Dart [OpenAiDeviceType] enum.
+extension _JSDeviceTypeToOpenAiDeviceType on JSDeviceType? {
+  /// Converts a [JSDeviceType] to [OpenAiDeviceType].
+  ///
+  /// Returns [OpenAiDeviceType.unknown] if the device type is not recognized.
+  /// Returns null if this is null.
   OpenAiDeviceType? toOpenAiDeviceType() {
     if (this == null) return null;
     return OpenAiDeviceType.values.firstWhere(
@@ -230,7 +739,12 @@ extension _JSStringToEnum on JSString? {
   }
 }
 
-extension _JSSafeAreaInsetsToOpenAiSafeAreaInsets on _JSSafeAreaInsets {
+/// Extension to convert JavaScript safe area insets to Dart [OpenAiSafeAreaInsets].
+extension _JSSafeAreaInsetsToOpenAiSafeAreaInsets on JSSafeAreaInsets {
+  /// Converts [JSSafeAreaInsets] to [OpenAiSafeAreaInsets].
+  ///
+  /// Extracts the numeric inset values from JavaScript and converts them
+  /// to Dart doubles.
   OpenAiSafeAreaInsets toOpenAiSafeAreaInsets() => OpenAiSafeAreaInsets(
     top: top.toDartDouble,
     bottom: bottom.toDartDouble,
@@ -239,131 +753,44 @@ extension _JSSafeAreaInsetsToOpenAiSafeAreaInsets on _JSSafeAreaInsets {
   );
 }
 
-extension _JSSafeAreaToOpenAiSafeArea on _JSSafeArea {
+/// Extension to convert JavaScript safe area to Dart [OpenAiSafeArea].
+extension _JSSafeAreaToOpenAiSafeArea on JSSafeArea {
+  /// Converts [JSSafeArea] to [OpenAiSafeArea].
+  ///
+  /// Recursively converts the nested insets object.
   OpenAiSafeArea toOpenAiSafeArea() => OpenAiSafeArea(
     insets: insets.toOpenAiSafeAreaInsets(),
   );
 }
 
-extension _JSUserAgentToUserAgent on _JSUserAgent {
+/// Extension to convert JavaScript user agent to Dart [UserAgent].
+extension _JSUserAgentToUserAgent on JSUserAgent {
+  /// Converts [JSUserAgent] to [UserAgent].
+  ///
+  /// Recursively converts the nested device and capabilities objects.
   UserAgent toUserAgent() => UserAgent(
     device: device.toUserAgentDevice(),
     capabilities: capabilities.toUserAgentCapabilities(),
   );
 }
 
-extension _JSUserAgentCapabilitiesToCapabilities on _JSUserAgentCapabilities {
+/// Extension to convert JavaScript user agent capabilities to Dart [UserAgentCapabilities].
+extension _JSUserAgentCapabilitiesToCapabilities on JSUserAgentCapabilities {
+  /// Converts [JSUserAgentCapabilities] to [UserAgentCapabilities].
+  ///
+  /// Extracts boolean capability flags from JavaScript.
   UserAgentCapabilities toUserAgentCapabilities() => UserAgentCapabilities(
     hover: hover.toDart,
     touch: touch.toDart,
   );
 }
 
-extension _JSUserAgentDeviceToUserAgentDevice on _JSUserAgentDevice {
+/// Extension to convert JavaScript user agent device to Dart [UserAgentDevice].
+extension _JSUserAgentDeviceToUserAgentDevice on JSUserAgentDevice {
+  /// Converts [JSUserAgentDevice] to [UserAgentDevice].
+  ///
+  /// Converts the device type enum to its Dart equivalent.
   UserAgentDevice toUserAgentDevice() => UserAgentDevice(
     type: type.toOpenAiDeviceType()!,
   );
-}
-
-/// Clase Dart para trabajar con el SDK de manera más idiomática
-class OpenAiSDK {
-  OpenAiSDK._(this._sdk);
-
-  static OpenAiSDK? _instance;
-
-  /// Constructor factory to get the instance of the SDK
-  static OpenAiSDK get instance {
-    _instance ??= OpenAiSDK._(window.openai);
-    return _instance!;
-  }
-
-  final _JSOpenAiSDK _sdk;
-
-  OpenAiGlobals _globalsFromJS(_JSOpenAiGlobals globals) => OpenAiGlobals(
-    theme: globals.theme.toOpenAiTheme(),
-    locale: globals.locale?.toDart,
-    maxHeight: globals.maxHeight?.toDartDouble,
-    displayMode: globals.displayMode.toOpenAiDisplayMode(),
-    safeArea: globals.safeArea?.toOpenAiSafeArea(),
-    userAgent: globals.userAgent?.toUserAgent(),
-  );
-
-  /// Call a tool
-  Future<_JSCallToolResponse> callTool(
-    String name,
-    Map<String, dynamic> args,
-  ) async {
-    final jsArgs = args.jsify() as JSObject;
-    final promise = _sdk.callTool(name.toJS, jsArgs);
-    return promise.toDart;
-  }
-
-  /// Send follow-up message
-  Future<void> sendFollowUpMessage(String prompt) async {
-    final args = _JSSendFollowUpMessageArgs(prompt: prompt.toJS);
-    await _sdk.sendFollowUpMessage(args).toDart;
-  }
-
-  /// Open external link
-  void openExternal(String href) {
-    final args = _JSOpenExternalArgs(href: href.toJS);
-    _sdk.openExternal(args);
-  }
-
-  /// Request display mode
-  Future<OpenAiDisplayMode> requestDisplayMode(OpenAiDisplayMode mode) async {
-    final args = _JSRequestDisplayModeArgs(mode: mode.data.toJS);
-    final response = await _sdk.requestDisplayMode(args).toDart;
-    return RequestDisplayModeResponse.fromJson(
-      response.dartify()! as Map<String, dynamic>,
-    ).mode;
-  }
-
-  /// Set widget state
-  Future<void> setWidgetState(Map<String, dynamic> state) async {
-    final jsState = state.jsify() as JSObject;
-    await _sdk.setWidgetState(jsState).toDart;
-  }
-
-  Stream<OpenAiGlobals> get globalsStream => window.onSetOpenAIGlobals.map(
-    (event) => _globalsFromJS(event.detail!.globals),
-  );
-
-  Stream<OpenAiTheme> get themeStream => globalsStream
-      .where((globals) => globals.theme != null)
-      .map((globals) => globals.theme!)
-      .distinct();
-
-  // Getters para globals
-  OpenAiTheme get theme => _sdk.theme.toOpenAiTheme() ?? OpenAiTheme.unknown;
-
-  String? get locale => _sdk.locale?.toDart;
-
-  double? get maxHeight => _sdk.maxHeight?.toDartDouble;
-
-  OpenAiDisplayMode? get displayMode => _sdk.displayMode.toOpenAiDisplayMode();
-
-  OpenAiDeviceType? get deviceType =>
-      _sdk.userAgent?.device.type.toOpenAiDeviceType();
-
-  bool get hasHoverCapability =>
-      _sdk.userAgent?.capabilities.hover.toDart ?? false;
-
-  bool get hasTouchCapability =>
-      _sdk.userAgent?.capabilities.touch.toDart ?? false;
-
-  OpenAiSafeAreaInsets? get safeAreaInsets =>
-      _sdk.safeArea?.insets.toOpenAiSafeAreaInsets();
-
-  Map<String, dynamic> get toolInput =>
-      _sdk.toolInput.dartify()! as Map<String, dynamic>;
-
-  Map<String, dynamic>? get toolOutput =>
-      _sdk.toolOutput.dartify() as Map<String, dynamic>?;
-
-  Map<String, dynamic>? get toolResponseMetadata =>
-      _sdk.toolResponseMetadata?.toJSBox as Map<String, dynamic>?;
-
-  Map<String, dynamic>? get widgetState =>
-      _sdk.widgetState.dartify() as Map<String, dynamic>?;
 }

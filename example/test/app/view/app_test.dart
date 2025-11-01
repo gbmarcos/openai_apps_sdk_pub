@@ -1,9 +1,9 @@
 // Ignore for testing purposes
 // ignore_for_file: prefer_const_constructors
 
+import 'package:example/main.dart';
+import 'package:example/src/features/counter/counter.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:example/app/app.dart';
-import 'package:example/counter/counter.dart';
 
 void main() {
   group('App', () {
