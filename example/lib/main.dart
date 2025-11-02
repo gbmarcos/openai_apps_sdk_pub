@@ -1,9 +1,11 @@
 import 'package:example/bootstrap.dart';
 import 'package:example/src/core/cubits/cubits.dart';
-import 'package:example/src/features/counter/counter.dart';
+import 'package:example/src/core/cubits/open_ai_safe_area_cubit.dart';
 import 'package:example/src/l10n/l10n.dart';
+import 'package:example/src/routing/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 Future<void> main() async {
@@ -19,13 +21,16 @@ class App extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => OpenAiThemeCubit()),
         BlocProvider(create: (_) => OpenAiDisplayModeCubit()),
+        BlocProvider(create: (_) => OpenAiSafeAreaCubit()),
       ],
       child: BlocBuilder<OpenAiThemeCubit, OpenAiTheme>(
         builder: (context, openAiTheme) {
-          return MaterialApp(
+          return MaterialApp.router(
             theme: ThemeData(
               appBarTheme: AppBarTheme(
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                backgroundColor: Theme.of(
+                  context,
+                ).colorScheme.inversePrimary,
               ),
               useMaterial3: true,
             ),
@@ -35,9 +40,11 @@ class App extends StatelessWidget {
               OpenAiTheme.dark => ThemeMode.dark,
               _ => null,
             },
+
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CounterPage(),
+
+            routerConfig: AppRouter.instance.router,
           );
         },
       ),

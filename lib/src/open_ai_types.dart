@@ -149,7 +149,7 @@ extension type JSOpenAiGlobals._(JSObject _) implements JSObject {
   ///
   /// Use these insets to position critical UI elements away from areas
   /// that might be obscured by the device's notch, status bar, or navigation bar.
-  external JSSafeArea? get safeArea;
+  external JSSafeArea get safeArea;
 
   // State properties
 

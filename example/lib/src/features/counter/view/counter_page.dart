@@ -1,10 +1,12 @@
+import 'package:example/src/core/cubits/cubits.dart';
+import 'package:example/src/core/cubits/open_ai_safe_area_cubit.dart';
 import 'package:example/src/features/counter/counter.dart';
 import 'package:example/src/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:openai_apps_sdk/openai_apps_sdk.dart' hide OpenAiTheme;
 import 'package:ultimate_flutter_icons/ficon.dart';
-import 'package:ultimate_flutter_icons/icons/ai.dart';
+import 'package:ultimate_flutter_icons/icons/md.dart';
 
 class CounterPage extends StatelessWidget {
   const CounterPage({super.key});
@@ -23,19 +25,30 @@ class CounterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final openAiSdk = OpenAiAppsSDKBridge.instance;
+    final openAiBridge = OpenAiAppsSDKBridge.instance;
+
+    final displayMode = context.select(
+      (OpenAiDisplayModeCubit cubit) => cubit.state,
+    );
+
+    final safeAreaInsets = context.select(
+      (OpenAiSafeAreaCubit cubit) => cubit.state,
+    );
+
+    final theme = context.select((OpenAiThemeCubit cubit) => cubit.state);
 
     dynamic getOpenAIDataSafely(dynamic Function() function) {
       try {
         return function();
-      } catch (e) {
+      } on Exception catch (e) {
         return 'Error: $e';
       }
     }
 
-    final l10n = context.l10n;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.counterAppBarTitle)),
+      appBar: AppBar(
+        title: Text(context.l10n.counterAppBarTitle),
+      ),
       body: SingleChildScrollView(
         child: FractionallySizedBox(
           widthFactor: 1,
@@ -45,25 +58,27 @@ class CounterView extends StatelessWidget {
             children: [
               const CounterText(),
               const Text('OpenAI SDK data:'),
-              Text('Theme: ${getOpenAIDataSafely(() => openAiSdk.theme)}'),
-              Text('Locale: ${getOpenAIDataSafely(() => openAiSdk.locale)}'),
+              Text('Theme: $theme'),
               Text(
-                'Device Type: ${getOpenAIDataSafely(() => openAiSdk.deviceType)}',
+                'Locale: ${getOpenAIDataSafely(() => openAiBridge.locale)}',
               ),
               Text(
-                'Max Height: ${getOpenAIDataSafely(() => openAiSdk.maxHeight)}',
+                'Device Type: ${getOpenAIDataSafely(() => openAiBridge.deviceType)}',
               ),
               Text(
-                'Display Mode: ${getOpenAIDataSafely(() => openAiSdk.displayMode)}',
+                'Max Height: ${getOpenAIDataSafely(() => openAiBridge.maxHeight)}',
               ),
               Text(
-                'Has Hover Capability: ${getOpenAIDataSafely(() => openAiSdk.hasHoverCapability)}',
+                'Display Mode: $displayMode',
               ),
               Text(
-                'Has Touch Capability: ${getOpenAIDataSafely(() => openAiSdk.hasTouchCapability)}',
+                'Has Hover Capability: ${getOpenAIDataSafely(() => openAiBridge.hasHoverCapability)}',
               ),
               Text(
-                'Safe Area Insets: ${getOpenAIDataSafely(() => openAiSdk.safeAreaInsets)}',
+                'Has Touch Capability: ${getOpenAIDataSafely(() => openAiBridge.hasTouchCapability)}',
+              ),
+              Text(
+                'Safe Area Insets: $safeAreaInsets',
               ),
             ],
           ),
@@ -72,17 +87,65 @@ class CounterView extends StatelessWidget {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
+        spacing: 8,
         children: [
           FloatingActionButton(
-            onPressed: () => context.read<CounterCubit>().increment(),
-            child: const FIcon(AI.AiOutlinePlus),
+            onPressed: () =>
+                openAiBridge.openExternal('https://www.google.com'),
+            child: const FIcon(MD.MdOpenInNew),
           ),
-          const SizedBox(height: 8),
+          FloatingActionButton(
+            onPressed: () =>
+                openAiBridge.sendFollowUpMessage('What is the time?'),
+            child: const FIcon(MD.MdAccessTime),
+          ),
+          FloatingActionButton(
+            onPressed: () => context.read<CounterCubit>().increment(),
+            child: const FIcon(MD.MdAdd),
+          ),
           FloatingActionButton(
             onPressed: () => context.read<CounterCubit>().decrement(),
-            child: const FIcon(AI.AiOutlineMinus),
+            child: const FIcon(MD.MdRemove),
           ),
         ],
+      ),
+      // bar to request display mode
+      bottomNavigationBar: SafeArea(
+        minimum: EdgeInsets.only(
+          top: safeAreaInsets.top,
+          bottom: safeAreaInsets.bottom,
+          left: safeAreaInsets.left,
+          right: safeAreaInsets.right,
+        ),
+        child: BottomNavigationBar(
+          onTap: (index) => openAiBridge.requestDisplayMode(switch (index) {
+            0 => OpenAiDisplayMode.inline,
+            1 => OpenAiDisplayMode.fullscreen,
+            2 => OpenAiDisplayMode.pip,
+            _ => OpenAiDisplayMode.inline,
+          }),
+
+          currentIndex: switch (displayMode) {
+            OpenAiDisplayMode.inline => 0,
+            OpenAiDisplayMode.fullscreen => 1,
+            OpenAiDisplayMode.pip => 2,
+            _ => 0,
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: FIcon(MD.MdBorderAll),
+              label: 'Inline',
+            ),
+            BottomNavigationBarItem(
+              icon: FIcon(MD.MdFullscreen),
+              label: 'Fullscreen',
+            ),
+            BottomNavigationBarItem(
+              icon: FIcon(MD.MdPictureInPicture),
+              label: 'PiP',
+            ),
+          ],
+        ),
       ),
     );
   }

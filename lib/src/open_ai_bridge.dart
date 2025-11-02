@@ -396,6 +396,69 @@ class OpenAiAppsSDKBridge {
       .map((globals) => globals.displayMode!)
       .distinct();
 
+  /// A broadcast stream of safe area changes.
+  ///
+  /// This stream emits whenever the safe area insets change due to device
+  /// orientation changes, keyboard appearance/dismissal, or system UI updates.
+  /// The stream automatically filters out non-safe area changes and
+  /// deduplicates consecutive identical values.
+  ///
+  /// Safe area insets define the padding needed to avoid overlapping with
+  /// system UI elements like notches, rounded corners, status bars, and
+  /// navigation bars.
+  ///
+  /// ## Example
+  /// ```dart
+  /// sdk.safeAreaStream.listen((safeArea) {
+  ///   final insets = safeArea.insets;
+  ///   print('Top: ${insets.top}');
+  ///   print('Bottom: ${insets.bottom}');
+  ///   print('Left: ${insets.left}');
+  ///   print('Right: ${insets.right}');
+  /// });
+  /// ```
+  ///
+  /// ## Usage with Flutter
+  /// ```dart
+  /// StreamBuilder<OpenAiSafeArea>(
+  ///   stream: sdk.safeAreaStream,
+  ///   initialData: sdk.safeAreaInsets != null
+  ///       ? OpenAiSafeArea(insets: sdk.safeAreaInsets!)
+  ///       : null,
+  ///   builder: (context, snapshot) {
+  ///     if (!snapshot.hasData) return yourContent;
+  ///
+  ///     final insets = snapshot.data!.insets;
+  ///     return SafeArea(
+  ///       minimum: EdgeInsets.only(
+  ///         top: insets.top,
+  ///         bottom: insets.bottom,
+  ///         left: insets.left,
+  ///         right: insets.right,
+  ///       ),
+  ///       child: yourContent,
+  ///     );
+  ///   },
+  /// )
+  /// ```
+  ///
+  /// ## Common Triggers
+  /// - Device rotation (portrait ↔ landscape)
+  /// - Keyboard appearance or dismissal
+  /// - Status bar visibility changes
+  /// - Navigation bar changes
+  /// - Display mode transitions (inline → fullscreen)
+  ///
+  /// ## Use Cases
+  /// - Dynamically adjusting content padding for system UI
+  /// - Repositioning floating action buttons away from notches
+  /// - Ensuring text fields remain visible above the keyboard
+  /// - Adapting layouts for different device orientations
+  Stream<OpenAiSafeArea> get safeAreaStream => globalsStream
+      .where((globals) => globals.safeArea != null)
+      .map((globals) => globals.safeArea!)
+      .distinct();
+
   // ============================================================================
   // Global State Getters
   // ============================================================================
@@ -576,8 +639,8 @@ class OpenAiAppsSDKBridge {
   ///   );
   /// }
   /// ```
-  OpenAiSafeAreaInsets? get safeAreaInsets =>
-      _openai.safeArea?.insets.toOpenAiSafeAreaInsets();
+  OpenAiSafeAreaInsets get safeAreaInsets =>
+      _openai.safeArea.insets.toOpenAiSafeAreaInsets();
 
   /// The input parameters passed to your tool when it was invoked.
   ///
