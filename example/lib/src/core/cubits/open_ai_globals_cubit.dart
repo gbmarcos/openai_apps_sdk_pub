@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
-class OpenAiThemeCubit extends Cubit<OpenAiTheme> {
-  OpenAiThemeCubit() : super(_openaiAppsBridge.theme) {
-    _subscription = _openaiAppsBridge.themeStream.listen(emit);
+class OpenAiGlobalsCubit extends Cubit<PartialOpenAiGlobals?> {
+  OpenAiGlobalsCubit() : super(null) {
+    _subscription = _openaiAppsBridge.globalsStream.listen(emit);
   }
   static final OpenAiAppsSDKBridge _openaiAppsBridge = OpenAiAppsSDKBridge();
 
-  late final StreamSubscription<OpenAiTheme>? _subscription;
+  late final StreamSubscription<PartialOpenAiGlobals>? _subscription;
 
   @override
   Future<void> close() async {

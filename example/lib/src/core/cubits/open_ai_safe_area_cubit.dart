@@ -9,8 +9,7 @@ class OpenAiSafeAreaCubit extends Cubit<OpenAiSafeAreaInsets> {
         .map((safeArea) => safeArea.insets)
         .listen(emit);
   }
-  static final OpenAiAppsSDKBridge _openaiAppsBridge =
-      OpenAiAppsSDKBridge.instance;
+  static final OpenAiAppsSDKBridge _openaiAppsBridge = OpenAiAppsSDKBridge();
 
   late final StreamSubscription<OpenAiSafeAreaInsets>? _subscription;
 

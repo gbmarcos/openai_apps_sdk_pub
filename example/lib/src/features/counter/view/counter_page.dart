@@ -5,8 +5,6 @@ import 'package:example/src/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:openai_apps_sdk/openai_apps_sdk.dart' hide OpenAiTheme;
-import 'package:ultimate_flutter_icons/ficon.dart';
-import 'package:ultimate_flutter_icons/icons/md.dart';
 
 class CounterPage extends StatelessWidget {
   const CounterPage({super.key});
@@ -25,7 +23,7 @@ class CounterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final openAiBridge = OpenAiAppsSDKBridge.instance;
+    final openAiBridge = OpenAiAppsSDKBridge();
 
     final displayMode = context.select(
       (OpenAiDisplayModeCubit cubit) => cubit.state,
@@ -92,20 +90,19 @@ class CounterView extends StatelessWidget {
           FloatingActionButton(
             onPressed: () =>
                 openAiBridge.openExternal('https://www.google.com'),
-            child: const FIcon(MD.MdOpenInNew),
+            child: const Icon(Icons.open_in_new),
           ),
           FloatingActionButton(
-            onPressed: () =>
-                openAiBridge.sendFollowUpMessage('What is the time?'),
-            child: const FIcon(MD.MdAccessTime),
+            onPressed: openAiBridge.updateSize,
+            child: const Icon(Icons.text_snippet_rounded),
           ),
           FloatingActionButton(
             onPressed: () => context.read<CounterCubit>().increment(),
-            child: const FIcon(MD.MdAdd),
+            child: const Icon(Icons.add),
           ),
           FloatingActionButton(
             onPressed: () => context.read<CounterCubit>().decrement(),
-            child: const FIcon(MD.MdRemove),
+            child: const Icon(Icons.remove),
           ),
         ],
       ),
@@ -133,15 +130,15 @@ class CounterView extends StatelessWidget {
           },
           items: const [
             BottomNavigationBarItem(
-              icon: FIcon(MD.MdBorderAll),
+              icon: Icon(Icons.border_all),
               label: 'Inline',
             ),
             BottomNavigationBarItem(
-              icon: FIcon(MD.MdFullscreen),
+              icon: Icon(Icons.fullscreen),
               label: 'Fullscreen',
             ),
             BottomNavigationBarItem(
-              icon: FIcon(MD.MdPictureInPicture),
+              icon: Icon(Icons.picture_in_picture),
               label: 'PiP',
             ),
           ],

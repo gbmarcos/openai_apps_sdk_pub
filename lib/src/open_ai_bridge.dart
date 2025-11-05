@@ -68,28 +68,74 @@ import 'package:web/web.dart';
 /// });
 /// ```
 class OpenAiAppsSDKBridge {
-  /// Private constructor for singleton pattern.
+  /// Factory constructor that returns the singleton instance.
+  ///
+  /// Always returns the same instance to ensure consistent state across the app.
+  ///
+  /// ```dart
+  /// final sdk = OpenAiAppsSDKBridge.instance();
+  /// ```
+  factory OpenAiAppsSDKBridge() => _instance;
+
+  /// Private constructor used internally to create the singleton instance.
+  ///
+  /// Takes the JavaScript `window.openai` API object as parameter.
   OpenAiAppsSDKBridge._(this._openai);
 
-  static OpenAiAppsSDKBridge? _instance;
-
-  /// Gets the singleton instance of the OpenAI Apps SDK Bridge.
-  ///
-  /// This is the primary entry point for accessing the OpenAI Apps API
-  /// from Dart code. The instance is lazily initialized on first access.
-  ///
-  /// ## Example
-  /// ```dart
-  /// final sdk = OpenAiAppsSDKBridge.instance;
-  /// final theme = sdk.theme;
-  /// ```
-  static OpenAiAppsSDKBridge get instance {
-    _instance ??= OpenAiAppsSDKBridge._(window.openai);
-    return _instance!;
-  }
+  /// The singleton instance initialized with `window.openai`.
+  static final OpenAiAppsSDKBridge _instance = OpenAiAppsSDKBridge._(
+    window.openai,
+  );
 
   /// The underlying JavaScript API instance.
   final JSAPI_AND_OpenAiGlobals _openai;
+
+  void initInlineModeSizeConfig({
+    required double desktopHeight,
+    required double mobileHeight,
+    double? unknownDeviceHeight,
+    double? tabletHeight,
+  }) {
+    _desktopHeight = desktopHeight;
+    _mobileHeight = mobileHeight;
+    _tabletHeight = tabletHeight ?? mobileHeight;
+    _unknownDeviceHeight = unknownDeviceHeight;
+
+    updateSize();
+
+    displayModeStream.listen((mode) {
+      if (mode == OpenAiDisplayMode.inline) {
+        updateSize();
+      }
+    });
+  }
+
+  void updateSize() {
+    _flutterView ??=
+        document.getElementsByTagName('flutter-view').item(0) as HTMLElement?;
+    if (_flutterView != null) {
+      switch (deviceType) {
+        case OpenAiDeviceType.mobile when _mobileHeight != null:
+          _flutterView!.style.height = '${_mobileHeight}px';
+        case OpenAiDeviceType.tablet when _tabletHeight != null:
+          _flutterView!.style.height = '${_tabletHeight}px';
+        case OpenAiDeviceType.desktop when _desktopHeight != null:
+          _flutterView!.style.height = '${_desktopHeight}px';
+        case OpenAiDeviceType.unknown when _unknownDeviceHeight != null:
+          _flutterView!.style.height = '${_unknownDeviceHeight}px';
+        // in other cases, no height set
+        // ignore: no_default_cases
+        default: // no height set
+      }
+    }
+  }
+
+  static double? _desktopHeight;
+  static double? _mobileHeight;
+  static double? _tabletHeight;
+  static double? _unknownDeviceHeight;
+  static String? _elementId;
+  static HTMLElement? _flutterView;
 
   /// Internal helper to convert JavaScript globals to Dart types.
   PartialOpenAiGlobals _globalsFromJS(JSPartialOpenAiGlobals globals) =>
@@ -232,6 +278,9 @@ class OpenAiAppsSDKBridge {
   /// - Some platforms may not support all display modes
   /// - User preferences or system policies may prevent certain transitions
   Future<OpenAiDisplayMode> requestDisplayMode(OpenAiDisplayMode mode) async {
+    if (mode == OpenAiDisplayMode.inline) {
+      updateSize();
+    }
     final args = JSRequestDisplayModeArgs(
       mode: switch (mode) {
         OpenAiDisplayMode.pip => JSDisplayMode.pip,

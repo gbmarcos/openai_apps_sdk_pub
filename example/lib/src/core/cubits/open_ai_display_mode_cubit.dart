@@ -8,7 +8,7 @@ class OpenAiDisplayModeCubit extends Cubit<OpenAiDisplayMode> {
     _subscription = _openaiAppsBridge.displayModeStream.listen(emit);
   }
   static final OpenAiAppsSDKBridge _openaiAppsBridge =
-      OpenAiAppsSDKBridge.instance;
+      OpenAiAppsSDKBridge();
 
   late final StreamSubscription<OpenAiDisplayMode>? _subscription;
 

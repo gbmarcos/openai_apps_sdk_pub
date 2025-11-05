@@ -1,6 +1,5 @@
 import 'package:example/bootstrap.dart';
 import 'package:example/src/core/cubits/cubits.dart';
-import 'package:example/src/core/cubits/open_ai_safe_area_cubit.dart';
 import 'package:example/src/l10n/l10n.dart';
 import 'package:example/src/routing/router.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 Future<void> main() async {
+  OpenAiAppsSDKBridge().initInlineModeSizeConfig(
+    desktopHeight: 400,
+    mobileHeight: 280,
+  );
   await bootstrap(() => const App());
 }
 

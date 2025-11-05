@@ -1,5 +1,5 @@
 name: example
-description: A Very Good Project created by Very Good CLI.
+description: A Example project for the OpenAI Apps SDK.
 version: 1.0.0+1
 publish_to: none
 
@@ -12,15 +12,19 @@ dependencies:
   carousel_slider: ^5.1.1
   flutter:
     sdk: flutter
-  flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
-  go_router: ^16.3.0
   intl: ^0.20.2
+
+  #  State Management
+  flutter_bloc: ^9.1.1
+
+  # Routing 
+  go_router: ^16.3.0
+
+  # OpenAI Apps SDK
   openai_apps_sdk:
     path: ../
-  ultimate_flutter_icons: ^1.4.0
-  url_launcher: ^6.3.2
 
 dev_dependencies:
   bloc_test: ^10.0.0
