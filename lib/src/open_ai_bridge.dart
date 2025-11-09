@@ -90,6 +90,23 @@ class OpenAiAppsSDKBridge {
   /// The underlying JavaScript API instance.
   final JSAPI_AND_OpenAiGlobals _openai;
 
+  /// Initializes the inline mode size config. (experimental)
+  ///
+  /// This method is used to set the height of the Flutter view in inline mode.
+  ///
+  /// ## Parameters
+  /// - [desktopHeight]: The height of the Flutter view in desktop mode.
+  /// - [mobileHeight]: The height of the Flutter view in mobile mode.
+  /// - [unknownDeviceHeight]: The height of the Flutter view in unknown device mode.
+  /// - [tabletHeight]: The height of the Flutter view in tablet mode.
+  ///
+  /// ## Example
+  /// ```dart
+  /// sdk.initInlineModeSizeConfig(
+  ///   desktopHeight: 400,
+  ///   mobileHeight: 280,
+  /// );
+
   void initInlineModeSizeConfig({
     required double desktopHeight,
     required double mobileHeight,
@@ -134,7 +151,6 @@ class OpenAiAppsSDKBridge {
   static double? _mobileHeight;
   static double? _tabletHeight;
   static double? _unknownDeviceHeight;
-  static String? _elementId;
   static HTMLElement? _flutterView;
 
   /// Internal helper to convert JavaScript globals to Dart types.
@@ -805,8 +821,7 @@ class OpenAiAppsSDKBridge {
   ///   print('Tool took $executionTime ms to execute');
   /// }
   /// ```
-  Json? get toolResponseMetadata =>
-      _openai.toolResponseMetadata?.toMap();
+  Json? get toolResponseMetadata => _openai.toolResponseMetadata?.toMap();
 
   /// The persistent widget state.
   ///
@@ -840,8 +855,7 @@ class OpenAiAppsSDKBridge {
   /// - Always handle null case (state may be cleared)
   /// - Use JSON-serializable types only
   /// - Consider state versioning for schema changes
-  Json? get widgetState =>
-      _openai.widgetState?.toMap();
+  Json? get widgetState => _openai.widgetState?.toMap();
 }
 
 // ============================================================================
