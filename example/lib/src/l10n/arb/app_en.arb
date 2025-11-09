@@ -3,5 +3,145 @@
     "counterAppBarTitle": "Counter",
     "@counterAppBarTitle": {
         "description": "Text shown in the AppBar of the Counter Page"
+    },
+    "homeAppBarTitle": "OpenAI Apps SDK Demo",
+    "@homeAppBarTitle": {
+        "description": "Text shown in the AppBar of the Home Page"
+    },
+    "displayModeTitle": "Display Mode",
+    "@displayModeTitle": {
+        "description": "Title for the display mode section"
+    },
+    "displayModeInline": "Inline",
+    "@displayModeInline": {
+        "description": "Label for inline display mode"
+    },
+    "displayModeFullscreen": "Fullscreen",
+    "@displayModeFullscreen": {
+        "description": "Label for fullscreen display mode"
+    },
+    "displayModePip": "PiP",
+    "@displayModePip": {
+        "description": "Label for picture-in-picture display mode"
+    },
+    "displayModeCurrent": "Current: {mode}",
+    "@displayModeCurrent": {
+        "description": "Shows the current display mode",
+        "placeholders": {
+            "mode": {
+                "type": "String",
+                "example": "inline"
+            }
+        }
+    },
+    "actionsTitle": "Actions",
+    "@actionsTitle": {
+        "description": "Title for the actions section"
+    },
+    "sendFollowUpMessage": "Send Follow-up Message(Ask chatgpt for the time)",
+    "@sendFollowUpMessage": {
+        "description": "Label for send follow-up message button"
+    },
+    "callMcpTool": "Call MCP Tool(Get a random number)",
+    "@callMcpTool": {
+        "description": "Label for call MCP tool button"
+    },
+    "toolResult": "Tool Result:",
+    "@toolResult": {
+        "description": "Label for tool result section"
+    },
+    "openExternalLink": "Open External Link (Open flutter official website)",
+    "@openExternalLink": {
+        "description": "Label for open external link button"
+    },
+    "updateWidgetState": "Update Widget State (Save the current time in the widget state)",
+    "@updateWidgetState": {
+        "description": "Label for update widget state button"
+    },
+    "currentWidgetState": "Current Widget State:",
+    "@currentWidgetState": {
+        "description": "Label for current widget state section"
+    },
+    "widgetStateUpdated": "Widget state updated!",
+    "@widgetStateUpdated": {
+        "description": "Success message when widget state is updated"
+    },
+    "errorMessage": "Error: {error}",
+    "@errorMessage": {
+        "description": "Error message template",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Something went wrong"
+            }
+        }
+    },
+    "openAiGlobalsTitle": "OpenAI Globals",
+    "@openAiGlobalsTitle": {
+        "description": "Title for the OpenAI globals section"
+    },
+    "globalTheme": "Theme",
+    "@globalTheme": {
+        "description": "Label for theme global"
+    },
+    "globalLocale": "Locale",
+    "@globalLocale": {
+        "description": "Label for locale global"
+    },
+    "globalDeviceType": "Device Type",
+    "@globalDeviceType": {
+        "description": "Label for device type global"
+    },
+    "globalDisplayMode": "Display Mode",
+    "@globalDisplayMode": {
+        "description": "Label for display mode global"
+    },
+    "globalMaxHeight": "Max Height",
+    "@globalMaxHeight": {
+        "description": "Label for max height global"
+    },
+    "globalHoverCapability": "Hover Capability",
+    "@globalHoverCapability": {
+        "description": "Label for hover capability global"
+    },
+    "globalTouchCapability": "Touch Capability",
+    "@globalTouchCapability": {
+        "description": "Label for touch capability global"
+    },
+    "globalSafeAreaTop": "Safe Area Top",
+    "@globalSafeAreaTop": {
+        "description": "Label for safe area top global"
+    },
+    "globalSafeAreaBottom": "Safe Area Bottom",
+    "@globalSafeAreaBottom": {
+        "description": "Label for safe area bottom global"
+    },
+    "globalSafeAreaLeft": "Safe Area Left",
+    "@globalSafeAreaLeft": {
+        "description": "Label for safe area left global"
+    },
+    "globalSafeAreaRight": "Safe Area Right",
+    "@globalSafeAreaRight": {
+        "description": "Label for safe area right global"
+    },
+    "globalWidgetState": "Widget State",
+    "@globalWidgetState": {
+        "description": "Label for widget state global"
+    },
+    "globalToolInput": "Tool Input",
+    "@globalToolInput": {
+        "description": "Label for tool input global"
+    },
+    "globalToolOutput": "Tool Output",
+    "@globalToolOutput": {
+        "description": "Label for tool output global"
+    },
+    "noToolCalledYet": "No tool called yet",
+    "@noToolCalledYet": {
+        "description": "Initial message when no tool has been called"
+    },
+    "notAvailable": "N/A",
+    "@notAvailable": {
+        "description": "Text shown when a value is not available"
     }
 }

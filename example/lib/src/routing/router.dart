@@ -1,8 +1,8 @@
-import 'package:example/src/features/counter/counter.dart';
+import 'package:example/src/features/home/home.dart';
 import 'package:go_router/go_router.dart';
 
 enum AppRoute {
-  counter('/');
+  home('/');
 
   final String path;
 
@@ -18,9 +18,9 @@ class AppRouter {
   final GoRouter router = GoRouter(
     routes: [
       GoRoute(
-        name: AppRoute.counter.name,
-        path: AppRoute.counter.path,
-        builder: (context, state) => const CounterPage(),
+        name: AppRoute.home.name,
+        path: AppRoute.home.path,
+        builder: (context, state) => const HomePage(),
       ),
     ],
   );

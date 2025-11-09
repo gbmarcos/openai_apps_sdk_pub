@@ -161,6 +161,8 @@ function createMcpServer(): McpServer {
         "openai/outputTemplate": "ui://widget/flutter-demo.html",
         "openai/toolInvocation/invoking": "Displaying the app",
         "openai/toolInvocation/invoked": "Displayed the app",
+        "openai/widgetAccessible": true,
+        "openai/resultCanProduceWidget": true,
       },
       inputSchema: { tasks: z.string() },
     },
@@ -172,7 +174,79 @@ function createMcpServer(): McpServer {
     }
   );
 
-  console.log("🔧 MCP Server configured with flutter-demo tool");
+  /**
+   * Register the get-random-number tool
+   *
+   * This tool generates a random number within a specified range.
+   * If no range is provided, it defaults to 0-100.
+   *
+   * Parameters:
+   * - min: Minimum value (inclusive)
+   * - max: Maximum value (inclusive)
+   */
+  server.registerTool(
+    "get-random-number",
+    {
+      title: "Get Random Number",
+      description: "Generates a random number within the specified range",
+      _meta: {
+        "openai/toolInvocation/invoking": "Generating random number",
+        "openai/toolInvocation/invoked": "Generated random number",
+        "openai/widgetAccessible": false,
+        "openai/resultCanProduceWidget": false,
+      },
+      inputSchema: {
+        min: z
+          .number()
+          .optional()
+          .default(0)
+          .describe("Minimum value (inclusive). Defaults to 0."),
+        max: z
+          .number()
+          .optional()
+          .default(100)
+          .describe("Maximum value (inclusive). Defaults to 100."),
+      },
+    },
+    async (params: { min?: number; max?: number }) => {
+      const min = params.min ?? 0;
+      const max = params.max ?? 100;
+
+      // Validate input
+      if (min > max) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Error: minimum value cannot be greater than maximum value",
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      // Generate random number (inclusive of both min and max)
+      const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Generated random number: ${randomNumber} (range: ${min} to ${max})`,
+          },
+        ],
+        structuredContent: {
+          randomNumber,
+          min,
+          max,
+        },
+      };
+    }
+  );
+
+  console.log(
+    "🔧 MCP Server configured with flutter-demo and get-random-number tools"
+  );
   return server;
 }
 

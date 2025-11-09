@@ -103,9 +103,9 @@ extension type JSAPI_AND_OpenAiGlobals._(JSObject _)
 /// - [safeArea]: Safe area insets for proper content positioning
 ///
 /// ### State Properties
-/// - [toolInput]: Input parameters for the current tool invocation
-/// - [toolOutput]: Output from the most recent tool execution
-/// - [toolResponseMetadata]: Metadata associated with tool responses
+/// - [toolInput]: Input parameters of the MCP tool that triggered the app display
+/// - [toolOutput]: Output from the MCP tool that triggered the app display
+/// - [toolResponseMetadata]: Metadata from the MCP tool that triggered the app display
 /// - [widgetState]: Persistent state for widget mode apps
 @JS()
 @anonymous
@@ -153,29 +153,39 @@ extension type JSOpenAiGlobals._(JSObject _) implements JSObject {
 
   // State properties
 
-  /// Input parameters passed to your tool when it's invoked.
+  /// Input parameters of the MCP tool that triggered the app to be displayed.
   ///
-  /// This object contains the arguments specified in your tool's schema
-  /// when ChatGPT calls your tool.
-  external JSObject get toolInput;
+  /// Your MCP server may have multiple tools, but only certain tools trigger
+  /// the app to be shown in ChatGPT. This property contains the arguments
+  /// that were passed to that specific tool when it was invoked.
+  ///
+  /// This allows your app to know why it was launched and what context
+  /// was provided by the user or the AI.
+  external JSUnknownObject get toolInput;
 
-  /// Output from the most recent tool execution.
+  /// Output from the MCP tool that triggered the app to be displayed.
   ///
-  /// This is populated after a tool completes and can be used to
-  /// display results or pass data between tool invocations.
-  external JSObject? get toolOutput;
+  /// This contains the result returned by the specific MCP tool that
+  /// caused ChatGPT to show your app. Use this data to render the
+  /// appropriate content in your application.
+  ///
+  /// Note: Only the tool that triggered the app display will have its
+  /// output available here, not outputs from other tools in your MCP server.
+  external JSUnknownObject? get toolOutput;
 
-  /// Metadata associated with the tool response.
+  /// Metadata from the MCP tool that triggered the app to be displayed.
   ///
-  /// Contains additional information about how the tool execution was
-  /// processed and any relevant context.
-  external JSObject? get toolResponseMetadata;
+  /// Contains additional information about the execution of the specific
+  /// MCP tool that caused ChatGPT to show your app. This may include
+  /// execution details, timing information, or other contextual data
+  /// relevant to that tool invocation.
+  external JSUnknownObject? get toolResponseMetadata;
 
   /// Persistent state for widget mode applications.
   ///
   /// In widget mode, you can use this to persist state across sessions.
   /// Use [JSAPI.setWidgetState] to update this value.
-  external JSObject? get widgetState;
+  external JSUnknownObject? get widgetState;
 }
 
 /// JavaScript API methods for interacting with the OpenAI Apps runtime.
@@ -383,16 +393,118 @@ extension type JSPartialOpenAiGlobals._(JSObject _) implements JSObject {
   external JSSafeArea? get safeArea;
 
   /// The updated tool input, if it changed.
-  external JSObject? get toolInput;
+  ///
+  /// Contains the input parameters of the MCP tool that triggered the app display.
+  external JSUnknownObject? get toolInput;
 
   /// The updated tool output, if it changed.
-  external JSObject? get toolOutput;
+  ///
+  /// Contains the output from the MCP tool that triggered the app to be displayed.
+  /// This represents the new content that should be rendered in your application.
+  external JSUnknownObject? get toolOutput;
 
   /// The updated tool response metadata, if it changed.
-  external JSObject? get toolResponseMetadata;
+  ///
+  /// Contains metadata from the MCP tool that triggered the app display.
+  external JSUnknownObject? get toolResponseMetadata;
 
   /// The updated widget state, if it changed.
-  external JSObject? get widgetState;
+  external JSUnknownObject? get widgetState;
+}
+
+@JS('Object.keys')
+external JSArray<JSString> _getKeysOfObject(JSAny? obj);
+
+/// Represents a JavaScript object with unknown structure.
+///
+/// This type is the Dart equivalent of TypeScript's `Record<string, unknown>`,
+/// representing a dynamic JavaScript object where keys are strings and values
+/// can be of any type. It provides a flexible way to work with arbitrary
+/// JavaScript objects without requiring a predefined structure.
+///
+/// ## JavaScript Type Mapping
+/// ```typescript
+/// export type UnknownObject = Record<string, unknown>;
+/// ```
+///
+/// ## Features
+/// - **Dynamic property access**: Read and write properties using the `[]` operator
+/// - **Key enumeration**: Access all object keys via the [keys] getter
+/// - **Conversion to Dart**: Convert to a Dart `Map<String, dynamic>` using [toMap]
+///
+/// ## Usage Examples
+///
+/// ### Reading properties
+/// ```dart
+/// JSUnknownObject obj = ...; // from OpenAI API
+/// final value = obj['propertyName'.toJS];
+/// final dartValue = value?.dartify(); // Convert to Dart type
+/// ```
+///
+/// ### Writing properties
+/// ```dart
+/// JSUnknownObject obj = JSObject() as JSUnknownObject;
+/// obj['name'.toJS] = 'John Doe'.toJS;
+/// obj['age'.toJS] = 30.toJS;
+/// ```
+///
+/// ### Iterating over keys
+/// ```dart
+/// JSUnknownObject obj = ...;
+/// for (int i = 0; i < obj.keys.length; i++) {
+///   final key = obj.keys[i];
+///   final value = obj[key];
+///   print('${key.toDart}: ${value?.dartify()}');
+/// }
+/// ```
+///
+/// ### Converting to Dart Map
+/// ```dart
+/// JSUnknownObject obj = window.openai.toolInput;
+/// Map<String, dynamic> dartMap = obj.toMap();
+/// // Now you can use standard Dart map operations
+/// final userId = dartMap['userId'];
+/// ```
+///
+/// ## Common Use Cases
+/// This type is used throughout the OpenAI Apps SDK for:
+/// - [JSOpenAiGlobals.toolInput]: Parameters passed to MCP tools
+/// - [JSOpenAiGlobals.toolOutput]: Results returned from MCP tools
+/// - [JSOpenAiGlobals.toolResponseMetadata]: Additional tool execution metadata
+/// - [JSOpenAiGlobals.widgetState]: Persistent widget state storage
+@JS()
+@anonymous
+extension type JSUnknownObject._(JSObject _) implements JSObject {
+  /// Accesses a property value by key.
+  ///
+  /// Returns `null` if the property doesn't exist.
+  external JSAny? operator [](JSString key);
+  
+  /// Sets a property value by key.
+  ///
+  /// Creates the property if it doesn't exist, or updates it if it does.
+  external void operator []=(JSString key, JSAny? value);
+
+  /// Returns an array of all enumerable property names in this object.
+  ///
+  /// This is equivalent to calling `Object.keys()` in JavaScript.
+  JSArray<JSString> get keys => _getKeysOfObject(this);
+
+  /// Converts this JavaScript object to a Dart Map.
+  ///
+  /// All values are converted to their Dart equivalents using [dartify()].
+  /// This allows you to work with the object data using familiar Dart APIs.
+  ///
+  /// ## Example
+  /// ```dart
+  /// JSUnknownObject jsObj = ...;
+  /// Map<String, dynamic> dartMap = jsObj.toMap();
+  /// ```
+  Map<String, dynamic> toMap() {
+    return {
+      for (int i = 0; i < keys.length; i++) keys[i].toDart: this[keys[i]].dartify(),
+    };
+  }
 }
 
 /// Represents the current theme of the ChatGPT interface.

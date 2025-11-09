@@ -183,7 +183,7 @@ class OpenAiAppsSDKBridge {
     String name,
     Json args,
   ) async {
-    final jsArgs = args.jsify()! as JSObject;
+    final jsArgs = args.jsify()! as JSUnknownObject;
     final promise = _openai.callTool(name.toJS, jsArgs);
 
     final response = await promise.toDart;
@@ -508,6 +508,57 @@ class OpenAiAppsSDKBridge {
       .map((globals) => globals.safeArea!)
       .distinct();
 
+  /// A broadcast stream of locale changes.
+  ///
+  /// This stream emits whenever the user's locale preference changes, allowing
+  /// your app to dynamically update its localization. The stream automatically
+  /// filters out non-locale changes and deduplicates consecutive identical values.
+  ///
+  /// The locale is typically in the format 'language-Country' (e.g., 'en-US',
+  /// 'es-ES', 'fr-FR', 'ja-JP').
+  ///
+  /// ## Example
+  /// ```dart
+  /// sdk.localeStream.listen((locale) {
+  ///   print('Locale changed to: $locale');
+  ///   // Reload app translations
+  ///   loadTranslations(locale);
+  /// });
+  /// ```
+  ///
+  /// ## Usage with Flutter
+  /// ```dart
+  /// StreamBuilder<String>(
+  ///   stream: sdk.localeStream,
+  ///   initialData: sdk.locale,
+  ///   builder: (context, snapshot) {
+  ///     if (!snapshot.hasData) return yourContent;
+  ///
+  ///     final locale = snapshot.data!;
+  ///     final parts = locale.split('-');
+  ///     final languageCode = parts[0];
+  ///     final countryCode = parts.length > 1 ? parts[1] : null;
+  ///
+  ///     return MaterialApp(
+  ///       locale: Locale(languageCode, countryCode),
+  ///       localizationsDelegates: [...],
+  ///       supportedLocales: [...],
+  ///       // ...
+  ///     );
+  ///   },
+  /// )
+  /// ```
+  ///
+  /// ## Use Cases
+  /// - Dynamically updating app language based on user preference
+  /// - Loading locale-specific translations and content
+  /// - Formatting dates, numbers, and currencies according to locale
+  /// - Adapting UI text direction (LTR/RTL) for languages like Arabic or Hebrew
+  Stream<String> get localeStream => globalsStream
+      .where((globals) => globals.locale != null)
+      .map((globals) => globals.locale!)
+      .distinct();
+
   // ============================================================================
   // Global State Getters
   // ============================================================================
@@ -721,7 +772,7 @@ class OpenAiAppsSDKBridge {
   /// ```dart
   /// {'userId': 42, 'includeDetails': true}
   /// ```
-  Json get toolInput => _openai.toolInput.dartify()! as Json;
+  Json get toolInput => _openai.toolInput.toMap();
 
   /// The output from the most recent tool execution.
   ///
@@ -737,7 +788,7 @@ class OpenAiAppsSDKBridge {
   ///   print('Last tool output: $result');
   /// }
   /// ```
-  Json? get toolOutput => _openai.toolOutput.dartify() as Json?;
+  Json? get toolOutput => _openai.toolOutput?.toMap();
 
   /// Metadata associated with the tool response.
   ///
@@ -755,7 +806,7 @@ class OpenAiAppsSDKBridge {
   /// }
   /// ```
   Json? get toolResponseMetadata =>
-      _openai.toolResponseMetadata?.toJSBox as Json?;
+      _openai.toolResponseMetadata?.toMap();
 
   /// The persistent widget state.
   ///
@@ -789,7 +840,8 @@ class OpenAiAppsSDKBridge {
   /// - Always handle null case (state may be cleared)
   /// - Use JSON-serializable types only
   /// - Consider state versioning for schema changes
-  Json? get widgetState => _openai.widgetState.dartify() as Json?;
+  Json? get widgetState =>
+      _openai.widgetState?.toMap();
 }
 
 // ============================================================================

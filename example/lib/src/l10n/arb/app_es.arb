@@ -3,5 +3,145 @@
     "counterAppBarTitle": "Contador",
     "@counterAppBarTitle": {
         "description": "Texto mostrado en la AppBar de la página del contador"
+    },
+    "homeAppBarTitle": "Demo de OpenAI Apps SDK",
+    "@homeAppBarTitle": {
+        "description": "Texto mostrado en la AppBar de la página de inicio"
+    },
+    "displayModeTitle": "Modo de Visualización",
+    "@displayModeTitle": {
+        "description": "Título para la sección de modo de visualización"
+    },
+    "displayModeInline": "En línea",
+    "@displayModeInline": {
+        "description": "Etiqueta para el modo de visualización en línea"
+    },
+    "displayModeFullscreen": "Pantalla completa",
+    "@displayModeFullscreen": {
+        "description": "Etiqueta para el modo de pantalla completa"
+    },
+    "displayModePip": "PiP",
+    "@displayModePip": {
+        "description": "Etiqueta para el modo imagen en imagen"
+    },
+    "displayModeCurrent": "Actual: {mode}",
+    "@displayModeCurrent": {
+        "description": "Muestra el modo de visualización actual",
+        "placeholders": {
+            "mode": {
+                "type": "String",
+                "example": "en línea"
+            }
+        }
+    },
+    "actionsTitle": "Acciones",
+    "@actionsTitle": {
+        "description": "Título para la sección de acciones"
+    },
+    "sendFollowUpMessage": "Enviar mensaje de seguimiento (Preguntar a chatgpt por la hora)",
+    "@sendFollowUpMessage": {
+        "description": "Etiqueta para el botón de enviar mensaje de seguimiento"
+    },
+    "callMcpTool": "Llamar herramienta MCP (Obtener un número aleatorio)",
+    "@callMcpTool": {
+        "description": "Etiqueta para el botón de llamar herramienta MCP"
+    },
+    "toolResult": "Resultado de la herramienta:",
+    "@toolResult": {
+        "description": "Etiqueta para la sección de resultado de la herramienta"
+    },
+    "openExternalLink": "Abrir enlace externo (Abrir sitio web oficial de Flutter)",
+    "@openExternalLink": {
+        "description": "Etiqueta para el botón de abrir enlace externo"
+    },
+    "updateWidgetState": "Actualizar estado del widget (Guardar la hora actual en el estado del widget)",
+    "@updateWidgetState": {
+        "description": "Etiqueta para el botón de actualizar estado del widget"
+    },
+    "currentWidgetState": "Estado actual del widget:",
+    "@currentWidgetState": {
+        "description": "Etiqueta para la sección de estado actual del widget"
+    },
+    "widgetStateUpdated": "¡Estado del widget actualizado!",
+    "@widgetStateUpdated": {
+        "description": "Mensaje de éxito cuando se actualiza el estado del widget"
+    },
+    "errorMessage": "Error: {error}",
+    "@errorMessage": {
+        "description": "Plantilla de mensaje de error",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Algo salió mal"
+            }
+        }
+    },
+    "openAiGlobalsTitle": "Variables globales de OpenAI",
+    "@openAiGlobalsTitle": {
+        "description": "Título para la sección de variables globales de OpenAI"
+    },
+    "globalTheme": "Tema",
+    "@globalTheme": {
+        "description": "Etiqueta para el tema global"
+    },
+    "globalLocale": "Idioma",
+    "@globalLocale": {
+        "description": "Etiqueta para el idioma global"
+    },
+    "globalDeviceType": "Tipo de dispositivo",
+    "@globalDeviceType": {
+        "description": "Etiqueta para el tipo de dispositivo global"
+    },
+    "globalDisplayMode": "Modo de visualización",
+    "@globalDisplayMode": {
+        "description": "Etiqueta para el modo de visualización global"
+    },
+    "globalMaxHeight": "Altura máxima",
+    "@globalMaxHeight": {
+        "description": "Etiqueta para la altura máxima global"
+    },
+    "globalHoverCapability": "Capacidad de hover",
+    "@globalHoverCapability": {
+        "description": "Etiqueta para la capacidad de hover global"
+    },
+    "globalTouchCapability": "Capacidad táctil",
+    "@globalTouchCapability": {
+        "description": "Etiqueta para la capacidad táctil global"
+    },
+    "globalSafeAreaTop": "Área segura superior",
+    "@globalSafeAreaTop": {
+        "description": "Etiqueta para el área segura superior global"
+    },
+    "globalSafeAreaBottom": "Área segura inferior",
+    "@globalSafeAreaBottom": {
+        "description": "Etiqueta para el área segura inferior global"
+    },
+    "globalSafeAreaLeft": "Área segura izquierda",
+    "@globalSafeAreaLeft": {
+        "description": "Etiqueta para el área segura izquierda global"
+    },
+    "globalSafeAreaRight": "Área segura derecha",
+    "@globalSafeAreaRight": {
+        "description": "Etiqueta para el área segura derecha global"
+    },
+    "globalWidgetState": "Estado del widget",
+    "@globalWidgetState": {
+        "description": "Etiqueta para el estado del widget global"
+    },
+    "globalToolInput": "Entrada de herramienta",
+    "@globalToolInput": {
+        "description": "Etiqueta para la entrada de herramienta global"
+    },
+    "globalToolOutput": "Salida de herramienta",
+    "@globalToolOutput": {
+        "description": "Etiqueta para la salida de herramienta global"
+    },
+    "noToolCalledYet": "Aún no se ha llamado ninguna herramienta",
+    "@noToolCalledYet": {
+        "description": "Mensaje inicial cuando no se ha llamado ninguna herramienta"
+    },
+    "notAvailable": "N/D",
+    "@notAvailable": {
+        "description": "Texto mostrado cuando un valor no está disponible"
     }
 }

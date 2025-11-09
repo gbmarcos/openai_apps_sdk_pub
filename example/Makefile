@@ -1,4 +1,4 @@
-.PHONY: gen clean watch
+.PHONY: gen clean watch build
 
 
 gen: ## Generates the code
@@ -16,3 +16,7 @@ clean: ## Cleans the environment
 watch: ## Generates the assets
 	@echo "╠ Watching runner..."
 	@dart run build_runner watch --delete-conflicting-outputs
+
+build: ## Builds the project
+	@echo "╠ Building the project..."
+	@flutter build web --debug
