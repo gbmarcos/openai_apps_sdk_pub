@@ -5,6 +5,9 @@
 /// These types facilitate communication between your Dart/Flutter application and
 /// the OpenAI Apps platform through JavaScript interoperability.
 ///
+/// For reference to the official TypeScript type definitions, see:
+/// https://github.com/openai/openai-apps-sdk-examples/blob/main/src/types.ts
+///
 /// ## Key Features
 /// - Access to theme, locale, and user agent information
 /// - Display mode management (inline, fullscreen, pip)
@@ -213,12 +216,12 @@ extension type JSAPI._(JSObject _) implements JSObject {
   /// ```dart
   /// final response = await window.openai.callTool(
   ///   'getUserData'.toJS,
-  ///   jsify({'userId': 123}),
+  ///   {'userId': 123}.jsify()! as JSUnknownObject,
   /// ).toDart;
   /// ```
   external JSPromise<JSCallToolResponse> callTool(
     JSString name,
-    JSObject args,
+    JSUnknownObject args,
   );
 
   /// Triggers a follow-up turn in the ChatGPT conversation.
@@ -308,16 +311,21 @@ extension type JSAPI._(JSObject _) implements JSObject {
   ///
   /// ## Example
   /// ```dart
-  /// await window.openai.setWidgetState(
-  ///   jsify({'counter': 42, 'lastUpdated': DateTime.now().toIso8601String()}),
-  /// ).toDart;
+  /// await window.openai
+  ///       .setWidgetState(
+  ///         {'counter': 42,
+  ///               'lastUpdated': DateTime.now().toIso8601String(),
+  ///             }.jsify()!
+  ///             as JSUnknownObject,
+  ///       )
+  ///       .toDart;
   /// ```
   ///
   /// ## Notes
   /// - Only available in widget mode
   /// - State should be serializable to JSON
   /// - Consider size limitations for stored data
-  external JSPromise<JSAny?> setWidgetState(JSObject state);
+  external JSPromise<JSAny?> setWidgetState(JSUnknownObject state);
 }
 
 /// Event type name for global state change notifications.
@@ -479,7 +487,7 @@ extension type JSUnknownObject._(JSObject _) implements JSObject {
   ///
   /// Returns `null` if the property doesn't exist.
   external JSAny? operator [](JSString key);
-  
+
   /// Sets a property value by key.
   ///
   /// Creates the property if it doesn't exist, or updates it if it does.
@@ -502,7 +510,8 @@ extension type JSUnknownObject._(JSObject _) implements JSObject {
   /// ```
   Map<String, dynamic> toMap() {
     return {
-      for (int i = 0; i < keys.length; i++) keys[i].toDart: this[keys[i]].dartify(),
+      for (int i = 0; i < keys.length; i++)
+        keys[i].toDart: this[keys[i]].dartify(),
     };
   }
 }
@@ -782,16 +791,16 @@ extension type JSRequestDisplayModeResponse._(JSObject _) implements JSObject {
 ///
 /// Contains the result returned by your MCP server when a tool is invoked.
 ///
-/// ## Example
-/// ```dart
-/// final response = await window.openai.callTool(
-///   'fetchUserData'.toJS,
-///   jsify({'userId': 42}),
-/// ).toDart;
-///
-/// final result = response.result.toDart;
-/// print('Tool returned: $result');
-/// ```
+  /// ## Example
+  /// ```dart
+  /// final response = await window.openai.callTool(
+  ///   'fetchUserData'.toJS,
+  ///   {'userId': 42}.jsify()! as JSUnknownObject,
+  /// ).toDart;
+  ///
+  /// final result = response.result.toDart;
+  /// print('Tool returned: $result');
+  /// ```
 @JS()
 @anonymous
 extension type JSCallToolResponse._(JSObject _) implements JSObject {

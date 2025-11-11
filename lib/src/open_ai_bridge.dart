@@ -4,6 +4,9 @@
 /// JavaScript interop types, offering a more idiomatic Dart interface for
 /// interacting with the OpenAI Apps platform within ChatGPT.
 ///
+/// For reference to the official TypeScript type definitions, see:
+/// https://github.com/openai/openai-apps-sdk-examples/blob/main/src/types.ts
+///
 /// ## Key Features
 /// - **Type-safe API**: Converts JavaScript types to Dart-native types
 /// - **Reactive streams**: Observable streams for global state changes
@@ -118,16 +121,54 @@ class OpenAiAppsSDKBridge {
     _tabletHeight = tabletHeight ?? mobileHeight;
     _unknownDeviceHeight = unknownDeviceHeight;
 
-    updateSize();
+    _updateSize();
 
     displayModeStream.listen((mode) {
       if (mode == OpenAiDisplayMode.inline) {
-        updateSize();
+        _updateSize();
       }
     });
   }
 
-  void updateSize() {
+  /// Updates the Flutter view height based on device type and inline mode configuration.
+  ///
+  /// This method dynamically adjusts the height of the Flutter view element based on
+  /// the current device type and the height values configured via [initInlineModeSizeConfig].
+  /// It is automatically called when the app transitions to inline display mode or when
+  /// the inline mode size configuration is initialized.
+  ///
+  /// ## Behavior
+  /// - Retrieves the `<flutter-view>` HTML element (lazy initialization on first call)
+  /// - Sets the element's height CSS property based on the current [deviceType]
+  /// - Uses device-specific heights configured in [initInlineModeSizeConfig]
+  /// - If no height is configured for the current device type, no height is set
+  ///
+  /// ## Device-Specific Heights
+  /// The method applies heights in the following priority:
+  /// - **Mobile**: Uses `_mobileHeight` if configured
+  /// - **Tablet**: Uses `_tabletHeight` if configured
+  /// - **Desktop**: Uses `_desktopHeight` if configured
+  /// - **Unknown**: Uses `_unknownDeviceHeight` if configured
+  ///
+  /// ## When Called
+  /// This method is invoked automatically:
+  /// - After [initInlineModeSizeConfig] completes
+  /// - When the display mode changes to [OpenAiDisplayMode.inline]
+  /// - When [requestDisplayMode] is called with [OpenAiDisplayMode.inline]
+  ///
+  /// ## Example
+  /// ```dart
+  /// // Initialize size config first
+  /// sdk.initInlineModeSizeConfig(
+  ///   desktopHeight: 400,
+  ///   mobileHeight: 280,
+  /// );
+  ///
+  /// // _updateSize() is called automatically during init
+  /// // and whenever display mode changes to inline
+  /// ```
+
+  void _updateSize() {
     _flutterView ??=
         document.getElementsByTagName('flutter-view').item(0) as HTMLElement?;
     if (_flutterView != null) {
@@ -295,7 +336,7 @@ class OpenAiAppsSDKBridge {
   /// - User preferences or system policies may prevent certain transitions
   Future<OpenAiDisplayMode> requestDisplayMode(OpenAiDisplayMode mode) async {
     if (mode == OpenAiDisplayMode.inline) {
-      updateSize();
+      _updateSize();
     }
     final args = JSRequestDisplayModeArgs(
       mode: switch (mode) {
@@ -343,7 +384,7 @@ class OpenAiAppsSDKBridge {
   /// - Consider size limitations - keep state reasonably small
   /// - State persists across sessions but may be cleared by ChatGPT
   Future<void> setWidgetState(Json state) async {
-    final jsState = state.jsify()! as JSObject;
+    final jsState = state.jsify()! as JSUnknownObject;
     await _openai.setWidgetState(jsState).toDart;
   }
 
