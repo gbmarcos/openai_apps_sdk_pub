@@ -2,7 +2,7 @@ import 'package:example/src/core/cubits/cubits.dart';
 import 'package:example/src/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:openai_apps_sdk/openai_apps_sdk.dart' hide OpenAiTheme;
+import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 /// A page demonstrating all OpenAI Apps SDK functionalities
 class HomePage extends StatefulWidget {
@@ -158,10 +158,8 @@ class _HomePageState extends State<HomePage> {
                       onPressed: _isLoading
                           ? null
                           : () async {
-                              // just a greeting
-
                               final currentOpenAiLocale = _openAiBridge.locale;
-                              
+
                               await _openAiBridge.sendFollowUpMessage(
                                 'Dime la hora actual${currentOpenAiLocale != null ? ' en el lenguaje ${currentOpenAiLocale}' : ''}',
                               );
