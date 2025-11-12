@@ -4,7 +4,6 @@ version: 1.0.0+10
 repository: https://github.com/gbmarcos/openai_apps_sdk_pub
 issue_tracker: https://github.com/gbmarcos/openai_apps_sdk_pub/issues
 
-publish_to: https://pub.dev/
 platforms:
   web:
 
