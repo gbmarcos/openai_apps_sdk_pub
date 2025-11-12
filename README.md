@@ -42,8 +42,8 @@ Build rich, interactive experiences that leverage ChatGPT's AI capabilities whil
 ## 📱 Screenshots
 
 <p align="center">
-  <img src="screenshots/app_demo_1.png" alt="Flutter app running inside ChatGPT - View 1" width="45%">
-  <img src="screenshots/app_demo_2.png" alt="Flutter app running inside ChatGPT - View 2" width="45%">
+  <img src="https://raw.githubusercontent.com/gbmarcos/openai_apps_sdk_pub/main/screenshots/app_demo_1.png" alt="Flutter app running inside ChatGPT - View 1" width="45%">
+  <img src="https://raw.githubusercontent.com/gbmarcos/openai_apps_sdk_pub/main/screenshots/app_demo_2.png" alt="Flutter app running inside ChatGPT - View 2" width="45%">
 </p>
 
 > **Note:** Both screenshots show the app running in inline mode within ChatGPT conversations, displaying different features of the application.
@@ -141,7 +141,7 @@ To test and use applications built with this SDK, you **must enable Developer Mo
    - Toggle the **Developer Mode** switch to ON
 
 <p align="center">
-  <img src="screenshots/advanced_settings.png" alt="OpenAI Advanced Settings - Developer Mode" width="70%">
+  <img src="https://raw.githubusercontent.com/gbmarcos/openai_apps_sdk_pub/main/screenshots/advanced_settings.png" alt="OpenAI Advanced Settings - Developer Mode" width="70%">
 </p>
 
 > **Important**: Without Developer Mode enabled, your Flutter apps won't be able to run inside ChatGPT conversations.
@@ -688,7 +688,7 @@ The server should now be running on port 8000 and accessible via your public URL
    - **Other fields**: As explained in the [official documentation](https://developers.openai.com/apps-sdk/deploy/connect-chatgpt)
 
 <p align="center">
-  <img src="screenshots/connect_app_form.png" alt="Form to connect your app in ChatGPT Settings" width="70%">
+  <img src="https://raw.githubusercontent.com/gbmarcos/openai_apps_sdk_pub/main/screenshots/connect_app_form.png" alt="Form to connect your app in ChatGPT Settings" width="70%">
 </p>
 
 #### Step 6: Test Your App in ChatGPT
@@ -700,7 +700,7 @@ The server should now be running on port 8000 and accessible via your public URL
 3. Search for and select your app from the list
 
 <p align="center">
-  <img src="screenshots/select_app_chatgpt.png" alt="Selecting your app in ChatGPT" width="60%">
+  <img src="https://raw.githubusercontent.com/gbmarcos/openai_apps_sdk_pub/main/screenshots/select_app_chatgpt.png" alt="Selecting your app in ChatGPT" width="60%">
 </p>
 
 4. Send a prompt to activate your app:

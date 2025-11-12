@@ -1,6 +1,6 @@
 name: openai_apps_sdk
 description: Unofficial Flutter/Dart package that provides seamless integration with OpenAI's Apps SDK for ChatGPT, enabling developers to build interactive widgets and applications that run natively inside ChatGPT conversations.
-version: 1.0.0+10
+version: 1.0.1
 repository: https://github.com/gbmarcos/openai_apps_sdk_pub
 issue_tracker: https://github.com/gbmarcos/openai_apps_sdk_pub/issues
 
