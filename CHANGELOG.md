@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Fixed screenshot urls
+
 ## 1.0.0+10
 
 Initial release of OpenAI Apps SDK bridge for Flutter.
@@ -23,4 +27,6 @@ Initial release of OpenAI Apps SDK bridge for Flutter.
 - `displayModeStream` - Listen to display mode changes
 - `safeAreaStream` - Listen to safe area changes
 - `globalsStream` - Listen to global state changes
+
+
 
