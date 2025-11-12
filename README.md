@@ -1,7 +1,6 @@
 # OpenAI Apps SDK for Flutter
 
-[![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
-[![Powered by Mason](https://img.shields.io/endpoint?url=https%3A%2F%2Ftinyurl.com%2Fmason-badge)](https://github.com/felangel/mason)
+[![Pub][pub_badge]][pub_link]
 [![License: BSD-3-Clause][license_badge]][license_link]
 
 An unofficial Flutter/Dart package that provides seamless integration with OpenAI's Apps SDK for ChatGPT, enabling developers to build interactive widgets and web applications that run natively inside ChatGPT conversations.
@@ -113,7 +112,7 @@ flutter pub add openai_apps_sdk
 
 - **Dart SDK**: ^3.9.0 or higher
 - **Platform**: Web only (this package is designed to run inside ChatGPT)
-- **OpenAI ChatGPT Plus/Pro/Team/Enterprise**: A paid OpenAI subscription is required
+- **OpenAI ChatGPT Plus/Pro/Business/Enterprise/Education**: A paid OpenAI subscription is required
 - **Developer Mode**: Must be enabled in your OpenAI account settings
 
 ## 🔧 Enabling Developer Mode
@@ -122,7 +121,7 @@ To test and use applications built with this SDK, you **must enable Developer Mo
 
 ### Requirements
 
-- ✅ Active OpenAI subscription (Plus, Pro, Team, or Enterprise)
+- ✅ Active OpenAI subscription (Pro, Plus, Business, Enterprise or Education)
 - ✅ Access to ChatGPT's Advanced Settings
 
 ### Setup Steps
@@ -610,7 +609,7 @@ Testing Flutter apps inside ChatGPT requires a different setup than traditional 
 
 - **Node.js**: Required to run the MCP server
 - **ngrok** or **Cloudflared**: To expose your localhost to the public internet
-- **Developer Mode**: Must be enabled in ChatGPT (see [Enabling Developer Mode](#🔧-enabling-developer-mode))
+- **Developer Mode**: Must be enabled in ChatGPT (see [Enabling Developer Mode](#-enabling-developer-mode))
 
 #### Step 1: Build the Flutter App
 
@@ -798,20 +797,20 @@ For more details, check out the [example application](./example).
 
 ## 🔗 Resources
 
-- [OpenAI Apps SDK Official Documentation](https://platform.openai.com/docs/apps)
+- [OpenAI Apps SDK Official Documentation](https://developers.openai.com/apps-sdk)
 - [Example Project](./example)
 - [API Reference](https://pub.dev/documentation/openai_apps_sdk/latest/)
-- [Issue Tracker](https://github.com/yourusername/openai_apps_sdk/issues)
+- [Issue Tracker](https://github.com/gbmarcos/openai_apps_sdk/issues)
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTING.md) before submitting pull requests.
+Contributions are welcome!
 
 ### Development Setup
 
 1. Clone the repository:
 ```sh
-git clone https://github.com/yourusername/openai_apps_sdk.git
+git clone https://github.com/gbmarcos/openai_apps_sdk.git
 cd openai_apps_sdk
 ```
 
@@ -834,15 +833,16 @@ This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICE
 
 This is an **unofficial** package and is not affiliated with, maintained, authorized, endorsed, or sponsored by OpenAI.
 
+## 🙏 A Personal Note
+
+*Buy me a... No, no, no—I don't want your money; I want you to succeed. If you succeed, and you will, just take a second to bless my path.*
+
 ---
 
 Made with ❤️ for the Flutter community
 
-[dart_install_link]: https://dart.dev/get-dart
-[github_actions_link]: https://docs.github.com/en/actions/learn-github-actions
-[license_badge]: https://img.shields.io/badge/license-BSD--3--Clause-blue.svg
+[pub_badge]: https://img.shields.io/pub/v/openai_apps_sdk.svg
+[pub_link]: https://pub.dev/packages/openai_apps_sdk
+[license_badge]: https://img.shields.io/badge/license-BSD--3--Clause-green.svg
 [license_link]: https://opensource.org/licenses/BSD-3-Clause
-[very_good_analysis_badge]: https://img.shields.io/badge/style-very_good_analysis-B22C89.svg
-[very_good_analysis_link]: https://pub.dev/packages/very_good_analysis
-[very_good_coverage_link]: https://github.com/marketplace/actions/very-good-coverage
-[very_good_workflows_link]: https://github.com/VeryGoodOpenSource/very_good_workflows
+
