@@ -10,14 +10,14 @@ Build rich, interactive experiences that leverage ChatGPT's AI capabilities whil
 
 ## 📑 Table of Contents
 
-- [📱 Screenshots](#📱-screenshots)
-- [💡 Background & Motivation](#💡-background--motivation)
-- [✨ Features](#✨-features)
-- [🚀 Installation](#🚀-installation)
-- [📋 Prerequisites](#📋-prerequisites)
-- [🔧 Enabling Developer Mode](#🔧-enabling-developer-mode)
-- [🌐 Connecting Your Flutter App to ChatGPT](#🌐-connecting-your-flutter-app-to-chatgpt)
-- [📚 Usage](#📚-usage)
+- [📱 Screenshots](#-screenshots)
+- [💡 Background & Motivation](#-background--motivation)
+- [✨ Features](#-features)
+- [🚀 Installation](#-installation)
+- [📋 Prerequisites](#-prerequisites)
+- [🔧 Enabling Developer Mode](#-enabling-developer-mode)
+- [🌐 Connecting Your Flutter App to ChatGPT](#-connecting-your-flutter-app-to-chatgpt)
+- [📚 Usage](#-usage)
   - [Getting Started](#getting-started)
   - [1. Theme Synchronization](#1-theme-synchronization)
   - [2. Display Mode Management](#2-display-mode-management)
@@ -32,13 +32,13 @@ Build rich, interactive experiences that leverage ChatGPT's AI capabilities whil
   - [11. Access Tool Input Parameters](#11-access-tool-input-parameters)
   - [12. Access Tool Output and Metadata](#12-access-tool-output-and-metadata)
   - [13. Listen to Global State Changes](#13-listen-to-global-state-changes)
-- [🎯 Example Application](#🎯-example-application)
-- [📖 API Reference](#📖-api-reference)
-- [🌐 Platform Support](#🌐-platform-support)
-- [🔗 Resources](#🔗-resources)
-- [🤝 Contributing](#🤝-contributing)
-- [📄 License](#📄-license)
-- [⚠️ Disclaimer](#⚠️-disclaimer)
+- [🎯 Example Application](#-example-application)
+- [📖 API Reference](#-api-reference)
+- [🌐 Platform Support](#-platform-support)
+- [🔗 Resources](#-resources)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [⚠️ Disclaimer](#-disclaimer)
 
 ## 📱 Screenshots
 
