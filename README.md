@@ -800,7 +800,7 @@ For more details, check out the [example application](./example).
 - [OpenAI Apps SDK Official Documentation](https://developers.openai.com/apps-sdk)
 - [Example Project](./example)
 - [API Reference](https://pub.dev/documentation/openai_apps_sdk/latest/)
-- [Issue Tracker](https://github.com/gbmarcos/openai_apps_sdk/issues)
+- [Issue Tracker](https://github.com/gbmarcos/openai_apps_sdk_pub/issues)
 
 ## 🤝 Contributing
 
@@ -810,7 +810,7 @@ Contributions are welcome!
 
 1. Clone the repository:
 ```sh
-git clone https://github.com/gbmarcos/openai_apps_sdk.git
+git clone https://github.com/gbmarcos/openai_apps_sdk_pub.git
 cd openai_apps_sdk
 ```
 
