@@ -171,7 +171,7 @@ Import the package and access the singleton instance:
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 void main() {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   // Your app is now connected to ChatGPT!
   print('Current theme: ${sdk.theme}');
@@ -190,7 +190,7 @@ import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final sdk = OpenAiAppsSDKBridge.instance;
+    final sdk = OpenAiAppsSDKBridge();
     
     return StreamBuilder<OpenAiTheme>(
       stream: sdk.themeStream,
@@ -217,7 +217,7 @@ import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 // Request fullscreen mode
 Future<void> enterFullscreen() async {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   final grantedMode = await sdk.requestDisplayMode(
     OpenAiDisplayMode.fullscreen,
@@ -232,7 +232,7 @@ Future<void> enterFullscreen() async {
 
 // Listen to display mode changes
 void listenToDisplayMode() {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   sdk.displayModeStream.listen((mode) {
     switch (mode) {
@@ -263,7 +263,7 @@ Set custom heights for inline mode based on device type:
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 void configureInlineMode() {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   sdk.initInlineModeSizeConfig(
     desktopHeight: 400,
@@ -283,7 +283,7 @@ import 'dart:convert';
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 Future<void> fetchUserData() async {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   try {
     final result = await sdk.callTool(
@@ -309,7 +309,7 @@ Programmatically send messages to ChatGPT:
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 Future<void> askForMoreInfo() async {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   await sdk.sendFollowUpMessage(
     'Can you provide more details about this data?',
@@ -317,7 +317,7 @@ Future<void> askForMoreInfo() async {
 }
 
 Future<void> guideConversation(String userSelection) async {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   await sdk.sendFollowUpMessage(
     'The user selected: $userSelection. What are the next steps?',
@@ -333,12 +333,12 @@ Navigate users to external resources:
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 void openDocumentation() {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   sdk.openExternal('https://docs.example.com/api');
 }
 
 void openSupportPage() {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   sdk.openExternal('https://support.example.com');
 }
 ```
@@ -352,7 +352,7 @@ import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 // Save state
 Future<void> saveState(int counter, Map<String, dynamic> preferences) async {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   await sdk.setWidgetState({
     'counter': counter,
@@ -363,7 +363,7 @@ Future<void> saveState(int counter, Map<String, dynamic> preferences) async {
 
 // Restore state
 void restoreState() {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   final state = sdk.widgetState;
   
   if (state != null) {
@@ -388,7 +388,7 @@ import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 class LocalizedApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final sdk = OpenAiAppsSDKBridge.instance;
+    final sdk = OpenAiAppsSDKBridge();
     
     return StreamBuilder<String>(
       stream: sdk.localeStream,
@@ -433,7 +433,7 @@ import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 class SafeAreaExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final sdk = OpenAiAppsSDKBridge.instance;
+    final sdk = OpenAiAppsSDKBridge();
     
     return StreamBuilder<OpenAiSafeArea>(
       stream: sdk.safeAreaStream,
@@ -477,7 +477,7 @@ class AdaptiveButton extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    final sdk = OpenAiAppsSDKBridge.instance;
+    final sdk = OpenAiAppsSDKBridge();
     
     // Check device capabilities
     final hasHover = sdk.hasHoverCapability;
@@ -502,7 +502,7 @@ class AdaptiveButton extends StatelessWidget {
 
 // Device-specific layout
 Widget buildAdaptiveLayout() {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   switch (sdk.deviceType) {
     case OpenAiDeviceType.mobile:
@@ -525,7 +525,7 @@ Retrieve the parameters passed when your tool was invoked:
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 void handleToolInput() {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   final input = sdk.toolInput;
   
   final userId = input['userId'] as int?;
@@ -545,7 +545,7 @@ Retrieve the output and metadata from the MCP tool that triggered your app:
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 void handleToolData() {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   // Access tool output
   final output = sdk.toolOutput;
@@ -575,7 +575,7 @@ Monitor all global state changes with a single stream:
 import 'package:openai_apps_sdk/openai_apps_sdk.dart';
 
 void monitorGlobalChanges() {
-  final sdk = OpenAiAppsSDKBridge.instance;
+  final sdk = OpenAiAppsSDKBridge();
   
   sdk.globalsStream.listen((globals) {
     if (globals.theme != null) {
@@ -629,7 +629,7 @@ This will generate the web build in the `example/build/web` directory. The impor
 - **`main.dart.js`**: The compiled Dart code
 - **`assets/`**: All app assets (images, fonts, etc.)
 
-These files will be served by the MCP server. To see how the MCP server uses these files, check [`mcp_example/src/server.ts`](./mcp_example/src/server.ts).
+These files will be served by the MCP server. To see how the MCP server uses these files, check [`mcp_example/src/server.ts`](https://github.com/gbmarcos/openai_apps_sdk_pub/blob/main/mcp_example/src/server.ts).
 
 #### Step 2: Expose Your Localhost
 
@@ -721,7 +721,7 @@ The example app showcases:
 - ✅ MCP tool integration
 - ✅ Widget state persistence
 
-For more details, check out the [example application](./example).
+For more details, check out the [example application](https://github.com/gbmarcos/openai_apps_sdk_pub/tree/main/example).
 
 ## 📖 API Reference
 
@@ -798,7 +798,7 @@ For more details, check out the [example application](./example).
 ## 🔗 Resources
 
 - [OpenAI Apps SDK Official Documentation](https://developers.openai.com/apps-sdk)
-- [Example Project](./example)
+- [Example Project](https://github.com/gbmarcos/openai_apps_sdk_pub/tree/main/example)
 - [API Reference](https://pub.dev/documentation/openai_apps_sdk/latest/)
 - [Issue Tracker](https://github.com/gbmarcos/openai_apps_sdk_pub/issues)
 

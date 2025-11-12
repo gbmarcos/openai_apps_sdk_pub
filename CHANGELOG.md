@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2
+
+- Fixed README.md documentation
+
 ## 1.0.1
 
 - Fixed screenshot urls
