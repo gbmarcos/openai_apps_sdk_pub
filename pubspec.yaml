@@ -1,5 +1,5 @@
 name: openai_apps_sdk
-description: A Flutter/Dart package that provides seamless integration with OpenAI's Apps SDK for ChatGPT, enabling developers to build interactive widgets and applications that run natively inside ChatGPT conversations.
+description: Unofficial Flutter/Dart package that provides seamless integration with OpenAI's Apps SDK for ChatGPT, enabling developers to build interactive widgets and applications that run natively inside ChatGPT conversations.
 version: 1.0.0+10
 
 # homepage: https://github.com/qk7b/bloc_wrapped_values

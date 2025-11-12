@@ -831,18 +831,23 @@ class OpenAiAppsSDKBridge {
   /// ```
   Json get toolInput => _openai.toolInput.toMap();
 
-  /// The output from the most recent tool execution.
+  /// Output from the MCP tool that triggered the app to be displayed.
   ///
-  /// This map contains the result of the last tool that was called.
-  /// Returns null if no tool has been executed or if the tool hasn't
-  /// produced output yet.
+  /// This map contains the result returned by the specific MCP tool that
+  /// caused ChatGPT to show your app. Use this data to render the
+  /// appropriate content in your application.
+  ///
+  /// Returns null if the tool hasn't produced output yet.
+  ///
+  /// Note: Only the tool that triggered the app display will have its
+  /// output available here, not outputs from other tools in your MCP server.
   ///
   /// ## Example
   /// ```dart
   /// final output = sdk.toolOutput;
   /// if (output != null) {
   ///   final result = output['result'];
-  ///   print('Last tool output: $result');
+  ///   print('Tool output: $result');
   /// }
   /// ```
   Json? get toolOutput => _openai.toolOutput?.toMap();

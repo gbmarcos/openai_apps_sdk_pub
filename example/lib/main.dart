@@ -31,7 +31,6 @@ class App extends StatelessWidget {
       ],
       child: BlocBuilder<OpenAiLocaleCubit, String?>(
         builder: (context, localeString) {
-          
           final locale = _getLocaleFromString(localeString);
 
           return BlocBuilder<OpenAiThemeCubit, OpenAiTheme>(
